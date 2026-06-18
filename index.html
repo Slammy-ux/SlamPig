@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="SlamPigs: Rummy Den — a roguelike Gin Rummy card game with Wild Pigs, Charms, and 8 increasingly brutal Dens.">
+<title>SlamPigs: Rummy Den</title>
+<!-- Preload fonts to prevent FOUT -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Hidden aria-live region for screen reader log announcements -->
+<div id="log-live" aria-live="polite" aria-atomic="true" class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0"></div>
+<!-- aria-live for discard pile changes -->
+<div id="discard-live" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)"></div>
+
+<div class="app" id="app">
+
+<!-- TOPBAR -->
+<div class="topbar" id="topbar" style="display:none" role="banner">
+  <div class="brand" aria-label="SlamPigs Rummy Den"><span aria-hidden="true" style="font-size:1.3rem">🥊</span> SlamPigs <span class="brand-sub">Rummy Den</span></div>
+  <div class="top-stats" role="status" aria-label="Game stats">
+    <div class="stat-pill"><span class="label">ACORNS</span> <span id="stat-acorns">0</span> <span aria-hidden="true">🌰</span></div>
+    <div class="stat-pill"><span class="label">DEN</span> <span id="stat-den">1/8</span></div>
+    <div class="stat-pill" id="stat-deck-pill"><span class="label">DECK</span> <span id="stat-deck">52</span></div>
+    <button class="btn btn-ghost btn-sm" data-action="show-charms" aria-label="View your Charms">🧿 Charms</button>
+    <button class="btn btn-ghost btn-sm" data-action="show-tutorial" aria-label="Open help / tutorial">❓ Help</button>
+  </div>
+</div>
+
+<!-- TITLE SCREEN -->
+<div class="screen active" id="screen-title" role="main">
+  <div class="panel" style="max-width:600px;margin:0 auto">
+    <div class="title-pig">
+      <svg role="img" aria-label="SlamPigs mascot: a luchador pig" width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 18px rgba(255,95,150,.5))">
+        <!-- Head -->
+        <ellipse cx="60" cy="68" rx="38" ry="34" fill="#f4a0b0"/>
+        <!-- Ears -->
+        <ellipse cx="26" cy="46" rx="12" ry="14" fill="#f4a0b0"/>
+        <ellipse cx="94" cy="46" rx="12" ry="14" fill="#f4a0b0"/>
+        <ellipse cx="26" cy="46" rx="7" ry="9" fill="#e06080"/>
+        <ellipse cx="94" cy="46" rx="7" ry="9" fill="#e06080"/>
+        <!-- Luchador mask base — deep crimson -->
+        <ellipse cx="60" cy="64" rx="36" ry="32" fill="#b81c2c"/>
+        <!-- Mask eye holes — gold outlined -->
+        <ellipse cx="44" cy="60" rx="11" ry="9" fill="#f4a0b0" stroke="#e8a830" stroke-width="2.5"/>
+        <ellipse cx="76" cy="60" rx="11" ry="9" fill="#f4a0b0" stroke="#e8a830" stroke-width="2.5"/>
+        <!-- Eyes -->
+        <ellipse cx="44" cy="61" rx="5" ry="5.5" fill="#1a0808"/>
+        <ellipse cx="76" cy="61" rx="5" ry="5.5" fill="#1a0808"/>
+        <circle cx="42" cy="59" r="1.5" fill="white"/>
+        <circle cx="74" cy="59" r="1.5" fill="white"/>
+        <!-- Mask decorative stripes — gold -->
+        <path d="M24 52 Q60 38 96 52" stroke="#e8a830" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <line x1="60" y1="38" x2="60" y2="96" stroke="#e8a830" stroke-width="2" opacity=".6"/>
+        <!-- Nose -->
+        <ellipse cx="60" cy="82" rx="14" ry="10" fill="#e06080"/>
+        <ellipse cx="55" cy="81" rx="4" ry="5" fill="#c03050"/>
+        <ellipse cx="65" cy="81" rx="4" ry="5" fill="#c03050"/>
+        <!-- Mouth — grinning -->
+        <path d="M46 92 Q60 102 74 92" stroke="#8a2030" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Mask chin strap detail -->
+        <path d="M28 82 Q22 96 32 106 Q46 114 60 114 Q74 114 88 106 Q98 96 92 82" stroke="#e8a830" stroke-width="2" fill="none" opacity=".7"/>
+        <!-- Tiny star emblems on mask -->
+        <text x="38" y="48" font-size="8" fill="#e8a830" text-anchor="middle">★</text>
+        <text x="82" y="48" font-size="8" fill="#e8a830" text-anchor="middle">★</text>
+      </svg>
+    </div>
+    <h1 class="title-logo">SlamPigs</h1>
+    <div class="title-sub">RUMMY DEN</div>
+    <p class="title-desc">
+      Build melds, outsmart the pack, and Slam Down before they do.<br>
+      A roguelike Gin Rummy crawl through 8 increasingly savage dens.
+    </p>
+    <div class="title-feat" aria-label="Features" role="list">
+      <span class="feat-pill" role="listitem">🎴 Gin Rummy</span>
+      <span class="feat-pill" role="listitem">🗺️ 8 Dens</span>
+      <span class="feat-pill" role="listitem">🐖 Wild Pigs</span>
+      <span class="feat-pill" role="listitem">🧿 Charms</span>
+      <span class="feat-pill" role="listitem">✂️ Deck Cull</span>
+    </div>
+    <button class="btn btn-primary btn-lg" data-action="start-game" style="width:100%;margin-bottom:12px">🐾 Start Run</button>
+    <p class="note" style="text-align:center">Goal: Clear all 8 Dens — then survive endless Wilds Beyond</p>
+    <hr class="sep" style="margin-top:16px">
+    <div style="font-size:.75rem;color:var(--text-faint);margin-top:10px;line-height:1.7">
+      <b style="color:var(--text-dim)">How to play:</b> Draw from the stock or take the discard. Form <b style="color:var(--green)">Packs</b> (3+ same rank) and <b style="color:var(--blue)">Trails</b> (3+ sequential, same habitat). Hit the score target, then <b style="color:var(--pink)">Slam Down!</b>
+    </div>
+  </div>
+</div>
+
+<!-- DEN MAP SCREEN -->
+<div class="screen" id="screen-map" role="main">
+  <div class="panel">
+    <div class="map-header">
+      <h2 class="map-title" id="map-title">🗺️ The Wilds</h2>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px" id="map-subtitle">Choose your next Den</div>
+    </div>
+    <div id="difficulty-row" style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap" role="group" aria-label="Select difficulty">
+      <span style="font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint)">DIFFICULTY</span>
+      <button class="diff-btn" id="diff-easy"   data-action="set-difficulty" data-diff="easy"   title="Opponent slams conservatively.">🐷 Easy</button>
+      <button class="diff-btn active" id="diff-medium" data-action="set-difficulty" data-diff="medium" title="Balanced opponent.">🐗 Medium</button>
+      <button class="diff-btn" id="diff-hard"   data-action="set-difficulty" data-diff="hard"   title="Opponent slams aggressively.">💀 Hard</button>
+    </div>
+    <div class="den-grid" id="den-grid" role="list" aria-label="Den map"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:10px">
+      <div>
+        <div style="font-size:.7rem;color:var(--text-faint);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">YOUR CHARMS</div>
+        <div class="map-charms-row" id="map-charms-row" role="list" aria-label="Your charms">
+          <span style="font-size:.75rem;color:var(--text-faint);font-style:italic">None yet</span>
+        </div>
+      </div>
+      <div id="map-right-btn"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HAND SCREEN -->
+<div class="screen" id="screen-hand" role="main">
+  <div class="hand-topinfo" role="status">
+    <div>
+      <div class="den-info-label" id="hand-den-label">Den 1 — Bunny Burrow</div>
+      <div style="font-size:.7rem;color:var(--text-faint);margin-top:2px" id="hand-threshold-label">Knock threshold: 12 · Hand 1 of 3</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="hand-score-pips" class="hand-score-pips" aria-label="Hand score"></div>
+      <div>
+        <div class="vs-label">FIRST TO <span id="hand-first-to">2</span></div>
+        <div id="hand-modifier-line" style="margin-top:2px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field-wrap">
+    <!-- OPPONENT -->
+    <section class="opp-zone" aria-label="Opponent's hand">
+      <div class="zone-label">
+        <span id="opp-zone-label">OPPONENT</span>
+        <span id="opp-thinking-label" class="opp-thinking" style="display:none" aria-live="polite">Thinking…</span>
+      </div>
+      <div class="opp-cards-row" id="opp-cards-row" role="list" aria-label="Opponent cards (face down)"></div>
+    </section>
+
+    <!-- CENTER -->
+    <div class="center-zone">
+      <div class="pile-area">
+        <div class="pile-title" id="stock-label">STOCK</div>
+        <div class="stock-stack" id="stock-pile" role="button" tabindex="0"
+             data-action="draw-stock" aria-labelledby="stock-label"
+             aria-describedby="stock-count" aria-label="Draw from stock">
+          <div class="stock-card" aria-hidden="true">🐖</div>
+          <div class="stock-card" aria-hidden="true">🐖</div>
+          <div class="stock-card" aria-hidden="true">🐖</div>
+        </div>
+        <div class="pile-count" id="stock-count" aria-live="polite">32 left</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+        <div id="log-zone" class="log-bar" aria-label="Action log" role="log">Welcome to the Wilds.</div>
+        <div id="meld-groups-area" class="meld-groups-row" style="justify-content:center;display:none" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <!-- DISCARD FAN -->
+    <section id="discard-fan-wrap" style="background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 14px;" aria-label="Discard pile">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-wrap:wrap;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--text-faint);text-transform:uppercase">DISCARD PILE</span>
+          <span id="discard-count-label" style="font-size:.65rem;color:var(--text-faint);font-family:'Space Mono',monospace" aria-live="polite"></span>
+        </div>
+        <span id="discard-fan-hint" style="font-size:.68rem;color:var(--text-faint);font-style:italic" aria-live="polite"></span>
+      </div>
+      <div id="discard-fan" style="display:flex;align-items:flex-end;gap:4px;min-height:80px;flex-wrap:wrap;" role="list" aria-label="Discard cards"></div>
+    </section>
+
+    <!-- ABILITY BAR -->
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" id="ability-bar" role="toolbar" aria-label="Active abilities"></div>
+
+    <!-- PLAYER ZONE -->
+    <section class="player-zone" aria-label="Your hand">
+      <div class="zone-label">
+        <span>YOUR HAND</span>
+        <div style="display:flex;gap:6px;align-items:center" role="group" aria-label="Sort hand">
+          <span style="font-size:.6rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint)">SORT</span>
+          <button id="sort-rank-btn" data-action="sort-rank" title="Sort by rank" aria-label="Sort by rank" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.62rem;font-weight:700;color:var(--text-faint);cursor:pointer;font-family:'Nunito',sans-serif;min-height:28px">123</button>
+          <button id="sort-hab-btn" data-action="sort-habitat" title="Sort by habitat" aria-label="Sort by habitat" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.62rem;font-weight:700;color:var(--text-faint);cursor:pointer;font-family:'Nunito',sans-serif;min-height:28px">🌿</button>
+          <span id="player-phase-hint" style="color:var(--gold);font-size:.72rem" aria-live="polite"></span>
+        </div>
+      </div>
+      <!-- Committed melds -->
+      <div class="meld-zone-wrap" id="meld-zone-wrap" aria-label="Committed melds">
+        <div class="meld-zone-label">✓ MELDS</div>
+        <div class="meld-zone-row" id="meld-zone-row" role="list"></div>
+      </div>
+      <!-- Deadwood -->
+      <div id="deadwood-zone-label" class="deadwood-zone-label" style="display:none">DEADWOOD</div>
+      <div class="player-hand-row" id="player-hand-row" role="list" aria-label="Your deadwood cards" aria-multiselectable="true"></div>
+    </section>
+  </div>
+
+  <!-- Score Ticker -->
+  <div id="score-ticker" style="background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 16px;min-height:44px;display:flex;align-items:center" role="status" aria-label="Live score">
+    <span style="color:var(--text-faint);font-size:.75rem">Set melds to see score</span>
+  </div>
+
+  <div class="hand-bottom">
+    <div class="dw-display">
+      <div>
+        <div class="dw-label">PENALTY</div>
+        <div class="dw-val" id="dw-display" aria-live="polite" aria-label="Deadwood penalty">--</div>
+      </div>
+      <div class="meld-summary" id="meld-summary" aria-live="polite"></div>
+    </div>
+    <div class="action-btns" style="flex-wrap:wrap" role="group" aria-label="Actions">
+      <button class="btn-set-meld" id="btn-set-meld" data-action="set-meld" disabled aria-disabled="true">＋ Set Meld</button>
+      <button class="btn-clear-sel" id="btn-clear-sel" data-action="clear-sel" style="display:none" aria-label="Clear selection">✕ Clear</button>
+      <button class="btn btn-ghost" id="btn-discard" data-action="discard" disabled aria-disabled="true">Discard</button>
+      <button class="btn btn-primary" id="btn-slam" data-action="slam-down" disabled aria-disabled="true">🐾 Slam Down!</button>
+    </div>
+  </div>
+</div>
+
+<!-- HAND RESULT MODAL -->
+<div class="modal-bg hidden" id="modal-hand-result" role="dialog" aria-modal="true" aria-labelledby="hand-result-title" aria-hidden="true">
+  <div class="modal slide-in">
+    <h2 class="modal-title" id="hand-result-title">Hand Result</h2>
+    <div class="hand-reveal" id="hand-reveal"></div>
+    <div class="modal-body" id="hand-result-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" data-action="hand-result-next">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEN RESULT SCREEN -->
+<div class="screen" id="screen-den-result" role="main">
+  <div class="panel" style="max-width:540px;margin:0 auto">
+    <div class="result-hero" id="den-result-hero" aria-live="assertive"></div>
+  </div>
+</div>
+
+<!-- WILD PIG DRAFT -->
+<div class="screen" id="screen-draft" role="main">
+  <div class="panel" style="max-width:600px;margin:0 auto">
+    <div style="margin-bottom:16px">
+      <h2 class="map-title" style="font-size:1.4rem">🐖 Wild Pig Draft</h2>
+      <p style="font-size:.8rem;color:var(--text-dim);margin-top:4px">Choose one Wild Pig to add to your deck, or skip.</p>
+    </div>
+    <div class="pick-grid" id="draft-pick-grid" role="list" aria-label="Draft choices"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+      <button class="btn btn-gold" id="btn-draft-confirm" data-action="draft-confirm" disabled aria-disabled="true">Add to Deck</button>
+      <button class="btn btn-ghost" data-action="draft-skip">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- DECK CULL -->
+<div class="screen" id="screen-cull" role="main">
+  <div class="panel" style="max-width:700px;margin:0 auto">
+    <div style="margin-bottom:12px">
+      <h2 class="map-title" style="font-size:1.4rem">✂️ Cull Your Deck</h2>
+      <p style="font-size:.8rem;color:var(--text-dim);margin-top:4px">Remove one card from your deck permanently. Thinning your deck helps you draw what you need.</p>
+    </div>
+    <div class="cull-zone" id="cull-zone" role="list" aria-label="Cards available to remove"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn btn-primary" id="btn-cull-confirm" data-action="cull-confirm" disabled aria-disabled="true">✂️ Remove Selected</button>
+      <button class="btn btn-ghost" data-action="cull-skip">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="screen" id="screen-shop" role="main">
+  <div class="panel" style="max-width:540px;margin:0 auto">
+    <div style="margin-bottom:16px">
+      <h2 class="map-title" style="font-size:1.4rem">🛒 Charm Shop</h2>
+      <p style="font-size:.8rem;color:var(--text-dim);margin-top:4px" id="shop-subtitle">Spend Acorns on permanent Charms.</p>
+    </div>
+    <div id="shop-items" style="display:flex;flex-direction:column;gap:10px" role="list" aria-label="Shop items"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-ghost" data-action="leave-shop">Back to Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div class="screen" id="screen-gameover" role="main">
+  <div class="panel" style="max-width:500px;margin:0 auto">
+    <div class="gameover-wrap" id="gameover-content" aria-live="assertive"></div>
+  </div>
+</div>
+
+<!-- CHARMS SUMMARY MODAL -->
+<div class="modal-bg hidden" id="modal-charms" role="dialog" aria-modal="true" aria-labelledby="modal-charms-title" aria-hidden="true">
+  <div class="modal slide-in">
+    <h2 class="modal-title" id="modal-charms-title">🧿 Your Charms</h2>
+    <div id="charms-modal-body" class="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" data-action="close-modal" data-modal-id="modal-charms">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERIC MODAL -->
+<div class="modal-bg hidden" id="modal-generic" role="dialog" aria-modal="true" aria-labelledby="gen-modal-title" aria-hidden="true">
+  <div class="modal slide-in">
+    <h2 class="modal-title" id="gen-modal-title"></h2>
+    <div class="modal-body" id="gen-modal-body"></div>
+    <div class="modal-btns" id="gen-modal-btns"></div>
+  </div>
+</div>
+
+<!-- TUTORIAL MODAL -->
+<div class="modal-bg hidden" id="modal-tutorial" role="dialog" aria-modal="true" aria-labelledby="modal-tutorial-title" aria-hidden="true">
+  <div class="modal slide-in" style="max-width:640px;max-height:88vh;overflow-y:auto">
+    <h2 class="modal-title" id="modal-tutorial-title">❓ How to Play SlamPigs</h2>
+    <div id="tutorial-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap" role="tablist" aria-label="Tutorial sections">
+      <button class="tut-tab active" role="tab" aria-selected="true"  data-action="tut-tab" data-tab="basics">Basics</button>
+      <button class="tut-tab"        role="tab" aria-selected="false" data-action="tut-tab" data-tab="scoring">Scoring</button>
+      <button class="tut-tab"        role="tab" aria-selected="false" data-action="tut-tab" data-tab="pigs">Wild Pigs</button>
+      <button class="tut-tab"        role="tab" aria-selected="false" data-action="tut-tab" data-tab="charms">Charms</button>
+    </div>
+    <div id="tutorial-content" role="tabpanel"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn btn-primary" data-action="close-modal" data-modal-id="modal-tutorial">Got it!</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app -->
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
