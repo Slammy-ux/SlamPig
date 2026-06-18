@@ -1,0 +1,3187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlamPigs: Rummy Den</title>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ── Backgrounds: warm dark olive, not cold purple ── */
+  --bg:#1c1e16;--bg2:#232619;--bg3:#2c3020;
+  /* ── Panels: warm charcoal with slight green tint ── */
+  --panel:#2e3224;--panel2:#373c2a;--panel3:#414831;
+  /* ── Borders: muted sage ── */
+  --border:#545e3e;--border-soft:#464f34;
+  /* ── Text: warm off-white → muted sage → faint olive ── */
+  --text:#f0e8d0;--text-dim:#b8b898;--text-faint:#7a7a5a;
+  /* ── Accent: amber gold, coral pink, leaf green, sky blue, terracotta red ── */
+  --gold:#e8a830;--gold-dim:#b87e20;
+  --pink:#e05878;--pink-dim:#a83a58;
+  --green:#6ec44a;--green-dim:#4e8c32;
+  --red:#d85040;--red-dim:#a03830;
+  --blue:#4ab8d8;--blue-dim:#2e88a8;
+  --common:#98a888;--rare:#4ab8d8;--legendary:#e8a830;
+  --radius:14px;--radius-sm:8px;
+  --shadow:0 8px 24px rgba(0,0,0,0.45);
+  /* ── Habitat card backgrounds: richer, more distinct, gentler on eyes ── */
+  --hab-forest:#3a1510;--hab-plains:#2e1a08;--hab-tundra:#2a2010;--hab-swamp:#2a1408; /* Bacon/Sausage/PorkRind/Ribs */
+  --hab-forest-b:#8a3020;--hab-plains-b:#785018;--hab-tundra-b:#786030;--hab-swamp-b:#784020;
+  /* ── Habitat text colors: bright but not neon ── */
+  --hc-forest:#ff8060;--hc-plains:#f0a840;--hc-tundra:#e0d090;--hc-swamp:#f08050; /* Bacon=red,Sausage=amber,PorkRind=cream,Ribs=orange */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;font-family:'Nunito',sans-serif;color:var(--text);background:#181c10;transition:background 1.2s ease}
+body{display:flex;justify-content:center;padding:12px;align-items:flex-start}
+
+/* ── DEN 1: Bunny Burrow — dappled forest canopy, soft greens ── */
+body.den-1{background:
+  radial-gradient(ellipse at 20% 0%, #2a4a20 0%, transparent 50%),
+  radial-gradient(ellipse at 80% 100%, #1a3a14 0%, transparent 50%),
+  radial-gradient(ellipse at 60% 40%, #204018 0%, transparent 40%),
+  linear-gradient(180deg,#0e1a0c 0%,#162212 100%)}
+
+/* ── DEN 2: Fox Hollow — warm amber sunset, dusty orange ── */
+body.den-2{background:
+  radial-gradient(ellipse at 75% 10%, #4a2800 0%, transparent 45%),
+  radial-gradient(ellipse at 20% 90%, #3a1a00 0%, transparent 40%),
+  radial-gradient(ellipse at 50% 50%, #2a1500 0%, transparent 60%),
+  linear-gradient(160deg,#1e1000 0%,#2a1800 50%,#180c00 100%)}
+
+/* ── DEN 3: Wolf Pass — stormy midnight, electric blue edges ── */
+body.den-3{background:
+  radial-gradient(ellipse at 90% 10%, #0a1a40 0%, transparent 40%),
+  radial-gradient(ellipse at 10% 80%, #08124a 0%, transparent 35%),
+  radial-gradient(ellipse at 50% 50%, #060c28 0%, transparent 55%),
+  repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(20,40,100,.04) 80px, rgba(20,40,100,.04) 82px),
+  linear-gradient(180deg,#050820 0%,#080c28 100%)}
+
+/* ── DEN 4: Bear Cave — rocky earth, deep terracotta ── */
+body.den-4{background:
+  radial-gradient(ellipse at 30% 20%, #2a1408 0%, transparent 45%),
+  radial-gradient(ellipse at 70% 80%, #3a1c0a 0%, transparent 40%),
+  repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(60,30,10,.05) 30px, rgba(60,30,10,.05) 31px),
+  linear-gradient(160deg,#1a0c06 0%,#221408 100%)}
+
+/* ── DEN 5: Bison Stampede — golden dust clouds, wide plains ── */
+body.den-5{background:
+  radial-gradient(ellipse at 50% 0%, #3a2a00 0%, transparent 60%),
+  radial-gradient(ellipse at 0% 100%, #2a1c00 0%, transparent 40%),
+  radial-gradient(ellipse at 100% 60%, #302000 0%, transparent 40%),
+  repeating-linear-gradient(90deg, transparent, transparent 120px, rgba(80,60,0,.04) 120px, rgba(80,60,0,.04) 121px),
+  linear-gradient(180deg,#1a1200 0%,#221800 100%)}
+
+/* ── DEN 6: Gorilla Temple — ancient stone, deep jungle violet ── */
+body.den-6{background:
+  radial-gradient(ellipse at 50% 0%, #2a1a40 0%, transparent 50%),
+  radial-gradient(ellipse at 15% 85%, #1a0a30 0%, transparent 40%),
+  radial-gradient(ellipse at 85% 30%, #200a38 0%, transparent 35%),
+  repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(60,20,80,.04) 60px, rgba(60,20,80,.04) 61px),
+  repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(60,20,80,.04) 60px, rgba(60,20,80,.04) 61px),
+  linear-gradient(180deg,#100818 0%,#180c22 100%)}
+
+/* ── DEN 7: Tiger's Lair — smoldering embers, deep crimson ── */
+body.den-7{background:
+  radial-gradient(ellipse at 20% 20%, #4a0808 0%, transparent 40%),
+  radial-gradient(ellipse at 80% 70%, #3a0404 0%, transparent 40%),
+  radial-gradient(ellipse at 50% 100%, #500a00 0%, transparent 50%),
+  repeating-linear-gradient(135deg, transparent, transparent 40px, rgba(100,20,0,.04) 40px, rgba(100,20,0,.04) 41px),
+  linear-gradient(180deg,#180404 0%,#220606 100%)}
+
+/* ── DEN 8: Alpha's Den — volcanic black, gold veins ── */
+body.den-8{background:
+  radial-gradient(ellipse at 50% 50%, #1a1000 0%, transparent 70%),
+  radial-gradient(ellipse at 0% 0%, #2a1800 0%, transparent 40%),
+  radial-gradient(ellipse at 100% 100%, #281400 0%, transparent 40%),
+  repeating-linear-gradient(60deg, transparent, transparent 50px, rgba(100,70,0,.05) 50px, rgba(100,70,0,.05) 52px),
+  repeating-linear-gradient(120deg, transparent, transparent 50px, rgba(100,70,0,.05) 50px, rgba(100,70,0,.05) 52px),
+  linear-gradient(180deg,#0a0800 0%,#100c00 100%)}
+
+/* ── Wilds Beyond — void with distant stars ── */
+body.den-endless{background:
+  radial-gradient(ellipse at 30% 20%, #080818 0%, transparent 30%),
+  radial-gradient(ellipse at 70% 70%, #060612 0%, transparent 30%),
+  radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.2) 0%, transparent 100%),
+  radial-gradient(1px 1px at 60% 15%, rgba(255,255,255,.15) 0%, transparent 100%),
+  radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,.1) 0%, transparent 100%),
+  radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.12) 0%, transparent 100%),
+  linear-gradient(180deg,#030308 0%,#05050e 100%)}
+.app{width:100%;max-width:960px;display:flex;flex-direction:column;gap:10px}
+.screen{display:none}
+.screen.active{display:block}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-wrap:wrap;gap:8px}
+.brand{font-family:'Lilita One',cursive;font-size:1.5rem;color:var(--pink);text-shadow:2px 2px 0 #00000055;display:flex;align-items:center;gap:8px}
+.brand-sub{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--text-faint);letter-spacing:2px;text-transform:uppercase}
+.top-stats{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.stat-pill{background:var(--bg3);border:1px solid var(--border-soft);border-radius:20px;padding:4px 12px;font-size:0.8rem;display:flex;align-items:center;gap:5px;font-weight:700}
+.stat-pill .label{color:var(--text-faint);font-size:0.7rem;font-weight:600}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 18px;border-radius:var(--radius-sm);border:none;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.85rem;cursor:pointer;transition:all .15s;letter-spacing:.5px;white-space:nowrap}
+.btn-primary{background:var(--pink);color:#fff;box-shadow:0 3px 0 var(--pink-dim)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(1px);box-shadow:none}
+.btn-success{background:var(--green);color:#0a1a06;box-shadow:0 3px 0 var(--green-dim)}
+.btn-success:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-gold{background:var(--gold);color:#1a1000;box-shadow:0 3px 0 var(--gold-dim)}
+.btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text-dim);border:2px solid var(--border);padding:7px 16px}
+.btn-ghost:hover{border-color:var(--text-dim);color:var(--text)}
+.btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.btn-sm{padding:5px 12px;font-size:0.75rem;border-radius:6px}
+.btn-lg{padding:12px 28px;font-size:1rem}
+
+/* ── PANELS ── */
+.panel{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.panel-sm{background:var(--panel2);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px}
+
+/* ── TITLE SCREEN ── */
+#screen-title{text-align:center;padding:40px 20px}
+.title-logo{font-family:'Lilita One',cursive;font-size:4rem;color:var(--pink);text-shadow:4px 4px 0 #00000066,0 0 40px rgba(255,95,150,.3);margin-bottom:8px}
+.title-sub{font-family:'Space Mono',monospace;font-size:.85rem;color:var(--text-faint);letter-spacing:3px;margin-bottom:40px}
+.title-pig{font-size:5rem;margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(255,95,150,.4))}
+.title-desc{max-width:520px;margin:0 auto 30px;color:var(--text-dim);font-size:.9rem;line-height:1.6}
+.title-feat{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+.feat-pill{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:.75rem;color:var(--text-dim)}
+
+/* ── DEN MAP ── */
+#screen-map .map-header{text-align:center;margin-bottom:16px}
+.map-title{font-family:'Lilita One',cursive;font-size:1.6rem;color:var(--gold)}
+.den-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.den-node{background:var(--panel2);border:2px solid var(--border-soft);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.den-node:hover:not(.locked){border-color:var(--text-dim);transform:translateY(-2px);box-shadow:var(--shadow)}
+.den-node.current{border-color:var(--pink);box-shadow:0 0 16px rgba(255,95,150,.3)}
+.den-node.cleared{border-color:var(--green-dim);background:rgba(126,217,87,.06)}
+.den-node.locked{opacity:.45;cursor:not-allowed}
+.den-node.final{border-color:var(--gold)!important}
+.den-emoji-big{font-size:2rem;margin-bottom:6px;display:block}
+.den-num{font-size:.65rem;color:var(--text-faint);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.den-name-label{font-size:.8rem;font-weight:700;color:var(--text);margin:3px 0}
+.den-boss-label{font-size:.7rem;color:var(--text-dim)}
+.den-status-badge{position:absolute;top:6px;right:6px;font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:10px}
+.badge-cleared{background:rgba(126,217,87,.2);color:var(--green)}
+.badge-current{background:rgba(255,95,150,.2);color:var(--pink)}
+.badge-final{background:rgba(243,187,74,.2);color:var(--gold)}
+.map-charms-row{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+.charm-mini{background:var(--bg3);border:1px solid var(--border-soft);border-radius:8px;padding:4px 10px;font-size:.8rem;cursor:help;transition:border-color .15s}
+.charm-mini:hover{border-color:var(--legendary)}
+.map-hand-progress{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:8px}
+.hand-pip{width:12px;height:12px;border-radius:50%;border:2px solid var(--border)}
+.hand-pip.player-win{background:var(--green);border-color:var(--green-dim)}
+.hand-pip.opp-win{background:var(--red);border-color:var(--red-dim)}
+
+/* ── HAND SCREEN ── */
+#screen-hand{display:none}
+#screen-hand.active{display:flex;flex-direction:column;gap:10px}
+.hand-topinfo{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.den-info-label{font-family:'Lilita One',cursive;font-size:1.1rem;color:var(--gold)}
+.hand-score-pips{display:flex;gap:8px;align-items:center}
+.hand-pip-lg{width:16px;height:16px;border-radius:50%;border:2px solid var(--border)}
+.hand-pip-lg.pw{background:var(--green);border-color:var(--green-dim)}
+.hand-pip-lg.ow{background:var(--red);border-color:var(--red-dim)}
+.vs-label{font-size:.7rem;color:var(--text-faint);font-weight:700;letter-spacing:1px}
+.hand-num-label{font-size:.75rem;color:var(--text-faint);font-family:'Space Mono',monospace}
+
+.field-wrap{display:grid;grid-template-rows:auto auto auto auto auto;gap:8px}
+.opp-zone{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:12px}
+.zone-label{font-size:.7rem;color:var(--text-faint);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.opp-cards-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.card-back{width:68px;height:94px;background:var(--bg3);border:2px solid var(--border-soft);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--border);flex-shrink:0}
+
+.center-zone{display:flex;gap:12px;align-items:center;padding:4px 0}
+.pile-area{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pile-title{font-size:.65rem;color:var(--text-faint);font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.stock-stack{position:relative;width:64px;height:88px;cursor:pointer;transition:transform .15s}
+.stock-stack:hover{transform:scale(1.06)}
+.stock-card{width:64px;height:88px;background:var(--bg3);border:2px solid var(--border-soft);border-radius:9px;position:absolute;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--border)}
+.stock-card:nth-child(1){top:4px;left:4px}
+.stock-card:nth-child(2){top:2px;left:2px}
+.stock-card:nth-child(3){top:0;left:0}
+.pile-count{font-size:.7rem;color:var(--text-faint);font-family:'Space Mono',monospace}
+.discard-pile{width:56px;height:76px;border-radius:8px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative}
+.discard-pile:hover:not(.no-hover){border-color:var(--gold);box-shadow:0 0 12px rgba(243,187,74,.3)}
+.discard-pile.highlight-discard{border-color:var(--gold)!important;box-shadow:0 0 16px rgba(243,187,74,.4)!important;animation:pulse-gold .8s infinite alternate}
+/* ── DISCARD FAN ── */
+.fan-card{width:72px;height:100px;border-radius:10px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;flex-shrink:0;transition:transform .14s,box-shadow .14s,border-color .1s;font-family:'Nunito',sans-serif}
+.fan-card.fan-top{cursor:pointer}
+.fan-card.fan-top:hover{transform:translateY(-7px);z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.fan-card.fan-reachable{border-color:var(--gold)!important;box-shadow:0 0 10px rgba(232,168,48,.4);cursor:pointer}
+.fan-card.fan-reachable:hover{transform:translateY(-9px);box-shadow:0 0 20px rgba(232,168,48,.65);z-index:20}
+.fan-card.fan-locked{opacity:.45;cursor:not-allowed}
+.fan-card.fan-selected-reach{border-color:var(--pink)!important;transform:translateY(-11px);box-shadow:0 0 20px rgba(224,88,120,.6);z-index:30}
+.fan-card.fan-will-take{border-color:var(--blue)!important;box-shadow:0 0 9px rgba(74,184,216,.4);transform:translateY(-5px);z-index:15}
+.fan-card.fan-empty{border:2px dashed var(--border-soft);cursor:default;opacity:.4}
+.fan-rank{font-size:1.25rem;font-weight:800;line-height:1}
+.fan-name{font-size:.5rem;letter-spacing:.3px;text-transform:uppercase;color:var(--text-dim)}
+.fan-hab{font-size:1rem;margin-top:2px}
+.fan-badge{position:absolute;top:-7px;left:50%;transform:translateX(-50%);background:var(--gold);color:#1a1000;font-size:.5rem;font-weight:800;letter-spacing:.5px;padding:1px 5px;border-radius:6px;white-space:nowrap}
+.fan-badge.badge-take{background:var(--blue);color:#001a2a}
+.fan-badge.badge-locked{background:var(--border);color:var(--text-faint)}
+.fan-confirm{display:inline-flex;align-items:center;gap:5px;background:var(--gold);color:#1a1000;border:none;border-radius:8px;padding:6px 14px;font-family:'Nunito',sans-serif;font-weight:800;font-size:.8rem;cursor:pointer;transition:filter .15s;margin-top:8px}
+.fan-confirm:hover{filter:brightness(1.1)}
+.fan-confirm.fan-confirm-cancel{background:transparent;border:2px solid var(--border);color:var(--text-dim)}
+.fan-confirm.fan-confirm-cancel:hover{border-color:var(--text-dim);color:var(--text)}
+@keyframes pulse-gold{from{box-shadow:0 0 8px rgba(243,187,74,.3)}to{box-shadow:0 0 20px rgba(243,187,74,.6)}}
+
+.log-bar{background:var(--bg3);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px 14px;font-size:.8rem;color:var(--text-dim);min-height:38px;display:flex;align-items:center;line-height:1.4;font-style:italic}
+.log-bar b{color:var(--text);font-style:normal}
+.log-bar .log-good{color:var(--green)}
+.log-bar .log-bad{color:var(--red)}
+.log-bar .log-gold{color:var(--gold)}
+
+.player-zone{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:12px}
+/* Meld zone — sits above the deadwood row, visually elevated */
+.meld-zone-wrap{background:rgba(110,196,74,.07);border:2px dashed rgba(110,196,74,.35);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;display:none}
+.meld-zone-wrap.has-melds{display:block}
+.meld-zone-label{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);margin-bottom:8px}
+.meld-zone-row{display:flex;gap:10px;flex-wrap:wrap}
+.meld-group-box{background:rgba(110,196,74,.08);border:1.5px solid rgba(110,196,74,.3);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;position:relative}
+.meld-group-box-label{font-size:.58rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--green)}
+.meld-group-box-cards{display:flex;gap:4px}
+.btn-unmeld{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:var(--red);border:2px solid var(--panel);color:#fff;font-size:.7rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;padding:0;font-family:'Nunito',sans-serif}
+.btn-unmeld:hover{background:var(--red-dim)}
+/* Deadwood row label */
+.deadwood-zone-label{font-size:.62rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-faint);margin-bottom:8px;margin-top:4px}
+.player-hand-row{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;min-height:100px;align-items:flex-start;padding-top:4px}
+/* Set Meld button */
+.btn-set-meld{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:8px;border:2px solid var(--green);background:rgba(110,196,74,.12);color:var(--green);font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;transition:all .15s}
+.btn-set-meld:hover:not(:disabled){background:rgba(110,196,74,.25);border-color:var(--green-dim)}
+.btn-set-meld:disabled{opacity:.3;cursor:not-allowed}
+.btn-clear-sel{display:inline-flex;align-items:center;gap:5px;padding:7px 12px;border-radius:8px;border:2px solid var(--border);background:transparent;color:var(--text-faint);font-family:'Nunito',sans-serif;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .15s}
+.btn-clear-sel:hover{border-color:var(--text-dim);color:var(--text-dim)}
+
+/* ── CARDS ── */
+.card{width:82px;height:116px;border-radius:12px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:transform .14s,box-shadow .14s,border-color .1s;position:relative;flex-shrink:0;user-select:none;text-align:center;padding:0 5px}
+.card:hover{transform:translateY(-8px);z-index:10;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.card.selected{border-color:var(--pink)!important;transform:translateY(-13px);box-shadow:0 0 20px rgba(224,88,120,.55);z-index:20}
+.card.in-meld{border-color:var(--green)!important;box-shadow:0 0 10px rgba(110,196,74,.3)}
+.card.in-meld::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--green)}
+.card.multi-sel{border-color:var(--blue)!important;transform:translateY(-8px);box-shadow:0 0 14px rgba(74,184,216,.5);z-index:15}
+.card.meld-pending{border-color:var(--gold)!important;transform:translateY(-5px);box-shadow:0 0 10px rgba(232,168,48,.4);z-index:12}
+.card.high-dw{border-color:var(--red-dim)!important}
+.card.pig-card{border-color:#a06ac8}
+/* Card inner layout — all content centered */
+.card-body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%}
+.card-rank{font-size:1.7rem;font-weight:800;line-height:1;color:var(--text);text-align:center;width:100%;display:block}
+.card-name{font-size:.56rem;color:var(--text-dim);letter-spacing:.2px;text-transform:uppercase;text-align:center;width:100%;display:block;white-space:normal;overflow:visible;line-height:1.2;word-break:break-word;hyphens:auto}
+.card-hab{font-size:1.2rem;display:block;text-align:center;width:100%}
+.card-buff{font-size:.5rem;font-weight:800;color:var(--gold);text-align:center;width:100%;display:block;letter-spacing:.5px}
+.card-pig-icon{font-size:2rem;display:block;text-align:center;width:100%}
+.card-pig-label{font-size:.54rem;color:#c899e8;letter-spacing:.2px;text-transform:uppercase;font-weight:800;text-align:center;width:100%;display:block;white-space:normal;overflow:visible;line-height:1.2;word-break:break-word;hyphens:auto}
+/* DW tag — top-right corner, never overlapping center content */
+.card-dw-tag{position:absolute;top:3px;right:4px;font-size:.48rem;font-weight:800;color:var(--text-faint);font-family:'Space Mono',monospace;line-height:1}
+.card.hab-forest{background:var(--hab-forest);border-color:var(--hab-forest-b)}
+.card.hab-plains{background:var(--hab-plains);border-color:var(--hab-plains-b)}
+.card.hab-tundra{background:var(--hab-tundra);border-color:var(--hab-tundra-b)}
+.card.hab-swamp{background:var(--hab-swamp);border-color:var(--hab-swamp-b)}
+.card.hab-forest .card-rank{color:var(--hc-forest)}
+.card.hab-plains .card-rank{color:var(--hc-plains)}
+.card.hab-tundra .card-rank{color:var(--hc-tundra)}
+.card.hab-swamp .card-rank{color:var(--hc-swamp)}
+
+/* discard display card */
+.dcard{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
+.dcard .rank{font-size:1.2rem;font-weight:800}
+.dcard .name{font-size:.5rem;color:var(--text-dim);letter-spacing:.5px;text-transform:uppercase}
+.dcard .habicon{font-size:.9rem;margin-top:2px}
+
+/* ── HAND BOTTOM BAR ── */
+.hand-bottom{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.dw-display{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dw-label{font-size:.7rem;color:var(--text-faint);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.dw-val{font-family:'Lilita One',cursive;font-size:1.5rem;color:var(--gold)}
+.dw-val.dw-ok{color:var(--green)}
+.dw-val.dw-high{color:var(--red)}
+.meld-summary{font-size:.72rem;color:var(--text-dim)}
+.meld-summary .meld-count{color:var(--green);font-weight:800}
+.action-btns{display:flex;gap:8px;flex-wrap:wrap}
+.ability-btns{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── MELD GROUPS DISPLAY ── */
+.meld-groups-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;min-height:0}
+.meld-group{background:rgba(126,217,87,.06);border:1px dashed rgba(126,217,87,.3);border-radius:8px;padding:6px 8px;display:flex;flex-direction:column;gap:4px}
+.meld-group-cards{display:flex;gap:3px}
+.meld-group-label{font-size:.6rem;color:var(--green);font-weight:800;letter-spacing:.5px;text-transform:uppercase}
+.meld-card-mini{width:40px;height:56px;border-radius:6px;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.9rem;font-weight:800}
+.meld-card-mini.hab-forest{background:var(--hab-forest);color:#7ed957}
+.meld-card-mini.hab-plains{background:var(--hab-plains);color:#f3bb4a}
+.meld-card-mini.hab-tundra{background:var(--hab-tundra);color:#5cc8ff}
+.meld-card-mini.hab-swamp{background:var(--hab-swamp);color:#7ee8c0}
+.meld-card-mini.pig-mini{background:#2a1030;color:#c899e8;border-color:#9b59b6;font-size:1rem}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
+.modal-bg.hidden{display:none}
+.modal{background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:24px;max-width:500px;width:100%;box-shadow:0 16px 48px rgba(0,0,0,.7);position:relative;max-height:90vh;overflow-y:auto}
+.modal-title{font-family:'Lilita One',cursive;font-size:1.6rem;color:var(--pink);margin-bottom:12px}
+.modal-body{color:var(--text-dim);font-size:.9rem;line-height:1.6;margin-bottom:18px}
+.modal-btns{display:flex;gap:10px;flex-wrap:wrap}
+.modal-section{border-top:1px solid var(--border-soft);margin-top:16px;padding-top:16px}
+
+/* ── DRAFT / SHOP ── */
+.pick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.pick-card{background:var(--panel2);border:2px solid var(--border-soft);border-radius:var(--radius);padding:14px 10px;text-align:center;cursor:pointer;transition:all .2s}
+.pick-card:hover{border-color:var(--text-dim);transform:translateY(-2px);box-shadow:var(--shadow)}
+.pick-card.chosen{border-color:var(--gold);box-shadow:0 0 16px rgba(243,187,74,.3);background:rgba(243,187,74,.06)}
+.pick-emoji{font-size:2.2rem;margin-bottom:8px;display:block}
+.pick-name{font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:4px}
+.pick-rarity{font-size:.65rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.pick-rarity.common{color:var(--common)}
+.pick-rarity.rare{color:var(--rare)}
+.pick-rarity.legendary{color:var(--legendary)}
+.pick-desc{font-size:.72rem;color:var(--text-dim);line-height:1.4}
+.pick-tag{display:inline-block;background:var(--bg3);border:1px solid var(--border-soft);border-radius:10px;padding:2px 8px;font-size:.6rem;font-weight:800;color:var(--text-faint);margin-bottom:6px;letter-spacing:.5px}
+.shop-item{background:var(--panel2);border:2px solid var(--border-soft);border-radius:var(--radius);padding:14px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:all .2s}
+.shop-item:hover:not(.owned):not(.cant-afford){border-color:var(--gold);box-shadow:0 0 12px rgba(243,187,74,.2)}
+.shop-item.owned{border-color:var(--green-dim);background:rgba(126,217,87,.04);cursor:default}
+.shop-item.cant-afford{opacity:.5;cursor:not-allowed}
+.shop-emoji{font-size:1.8rem;flex-shrink:0;margin-top:2px}
+.shop-info{flex:1}
+.shop-name{font-weight:800;font-size:.9rem;color:var(--text);margin-bottom:3px}
+.shop-price{font-weight:800;font-size:.85rem;color:var(--gold);display:flex;align-items:center;gap:4px}
+.shop-price.owned-label{color:var(--green);font-size:.75rem}
+
+/* ── RESULT SCREENS ── */
+.result-hero{text-align:center;padding:30px 20px}
+.result-icon{font-size:4rem;margin-bottom:16px}
+.result-title{font-family:'Lilita One',cursive;font-size:2rem;margin-bottom:8px}
+.result-sub{font-size:.9rem;color:var(--text-dim);margin-bottom:24px;line-height:1.6}
+.result-acorns{font-family:'Lilita One',cursive;font-size:2.5rem;color:var(--gold);margin-bottom:20px}
+.result-breakdown{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.rb-item{background:var(--bg3);border:1px solid var(--border-soft);border-radius:10px;padding:8px 16px;text-align:center}
+.rb-val{font-size:1.2rem;font-weight:800;color:var(--gold);display:block}
+.rb-label{font-size:.65rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── HAND REVEAL (for slam result) ── */
+.hand-reveal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.reveal-side{background:var(--bg3);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:12px}
+.reveal-name{font-weight:800;font-size:.85rem;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.reveal-cards{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:6px}
+.reveal-melds{font-size:.7rem;color:var(--green);margin-bottom:4px}
+.reveal-dw{font-size:.8rem;font-weight:800}
+.reveal-dw.winner{color:var(--green)}
+.reveal-dw.loser{color:var(--red)}
+
+/* ── DECK CULL ── */
+.cull-zone{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:12px 0}
+.cull-card{width:48px;height:68px;border-radius:7px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex-shrink:0;font-size:1rem;font-weight:800}
+.cull-card:hover{border-color:var(--red);transform:scale(1.08)}
+.cull-card.cull-chosen{border-color:var(--red)!important;box-shadow:0 0 14px rgba(255,92,92,.4)}
+
+/* ── TOOLTIP ── */
+.diff-btn{background:var(--bg3);border:2px solid var(--border);border-radius:8px;padding:6px 16px;font-size:.8rem;font-weight:800;color:var(--text-faint);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s}
+.diff-btn:hover{border-color:var(--text-dim);color:var(--text)}
+.diff-btn.active{background:var(--panel2);color:var(--text)}
+.diff-btn#diff-easy.active{border-color:var(--green);color:var(--green);background:rgba(110,196,74,.12)}
+.diff-btn#diff-medium.active{border-color:var(--gold);color:var(--gold);background:rgba(232,168,48,.12)}
+.diff-btn#diff-hard.active{border-color:var(--red);color:var(--red);background:rgba(216,80,64,.12)}
+.tut-tab{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--text-dim);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s}
+.tut-tab.active,.tut-tab:hover{background:var(--panel2);border-color:var(--gold);color:var(--gold)}
+.tut-section{margin-bottom:14px}
+.tut-section h3{font-size:.82rem;font-weight:800;color:var(--text);margin-bottom:6px;border-bottom:1px solid var(--border-soft);padding-bottom:4px}
+.tut-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px;font-size:.78rem;color:var(--text-dim);line-height:1.5}
+.tut-icon{font-size:1.4rem;flex-shrink:0;width:28px;text-align:center}
+.tut-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tut-card{background:var(--bg3);border:1px solid var(--border-soft);border-radius:8px;padding:10px;font-size:.75rem}
+.tut-card-name{font-weight:800;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.tut-card-desc{color:var(--text-dim);font-size:.7rem;line-height:1.4}
+.tut-rarity-common{color:var(--common)}
+.tut-rarity-rare{color:var(--rare)}
+.tut-rarity-legendary{color:var(--legendary)}
+.tooltip-wrap{position:relative;display:inline-block}
+.tooltip-box{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1e2118;border:1px solid var(--border);border-radius:10px;padding:10px 14px;min-width:200px;max-width:260px;z-index:500;font-size:.78rem;color:var(--text-dim);line-height:1.5;pointer-events:none;box-shadow:var(--shadow)}
+.tooltip-wrap:hover .tooltip-box{display:block}
+.tooltip-title{font-weight:800;color:var(--text);margin-bottom:4px;font-size:.82rem}
+/* Card hover tooltip */
+.card-tip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1e2118;border:2px solid var(--border);border-radius:10px;padding:10px 13px;min-width:170px;max-width:230px;z-index:200;font-size:.75rem;color:var(--text-dim);line-height:1.5;pointer-events:none;box-shadow:0 8px 28px rgba(0,0,0,.65);white-space:normal;display:none}
+.card:hover .card-tip{display:block}
+.card-tip-name{font-weight:800;font-size:.85rem;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.card-tip-row{display:flex;justify-content:space-between;align-items:center;margin-top:3px;font-size:.72rem}
+.card-tip-label{color:var(--text-faint)}
+.card-tip-val{font-weight:700;color:var(--text)}
+.card-tip-desc{margin-top:5px;font-size:.7rem;color:var(--text-dim);font-style:italic;border-top:1px solid var(--border-soft);padding-top:4px}
+.card-tip-meld{color:var(--green);font-weight:700}
+.card-tip-dw{font-weight:800}
+.card-tip-dw.tip-ok{color:var(--green)}
+.card-tip-dw.tip-warn{color:var(--gold)}
+.card-tip-dw.tip-bad{color:var(--red)}
+
+/* ── OPP THINKING ── */
+.opp-thinking{font-size:.7rem;color:var(--blue);font-style:italic;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── GAME OVER ── */
+.gameover-wrap{text-align:center;padding:40px 20px}
+
+/* ── MISC ── */
+.sep{border:none;border-top:1px solid var(--border-soft);margin:12px 0}
+.tag-rare{color:var(--rare)}
+.tag-legendary{color:var(--legendary)}
+.tag-common{color:var(--common)}
+.note{font-size:.72rem;color:var(--text-faint);font-style:italic}
+.snout-warning{background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);border-radius:8px;padding:8px 12px;font-size:.78rem;color:var(--red);margin-top:8px}
+.clean-slam-highlight{background:rgba(126,217,87,.1);border:1px solid rgba(126,217,87,.3);border-radius:8px;padding:8px 12px;font-size:.78rem;color:var(--green);margin-top:8px}
+.den-modifier-badge{background:rgba(92,200,255,.1);border:1px solid rgba(92,200,255,.25);border-radius:8px;padding:6px 12px;font-size:.75rem;color:var(--blue);display:inline-flex;align-items:center;gap:6px}
+.active-ability-btn{background:rgba(243,187,74,.12);border:1px solid rgba(243,187,74,.3);border-radius:8px;padding:5px 12px;font-size:.72rem;color:var(--gold);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;transition:all .15s}
+.active-ability-btn:hover:not(:disabled){background:rgba(243,187,74,.22);border-color:var(--gold)}
+.active-ability-btn:disabled{opacity:.35;cursor:not-allowed}
+.active-ability-btn.used{opacity:.3;text-decoration:line-through;cursor:not-allowed}
+
+/* ── PROGRESS BAR ── */
+.prog-bar-wrap{background:var(--bg3);border-radius:10px;height:6px;overflow:hidden;width:100%;margin-top:4px}
+.prog-bar-fill{height:100%;border-radius:10px;transition:width .4s;background:var(--green)}
+.prog-bar-fill.danger{background:var(--red)}
+
+/* ── ENDLESS MODE ── */
+.endless-badge{background:rgba(243,187,74,.15);border:1px solid var(--gold-dim);border-radius:20px;padding:3px 10px;font-size:.65rem;color:var(--gold);font-weight:800;letter-spacing:1px;display:inline-block;margin-left:8px}
+
+/* ── ANIMATIONS ── */
+@keyframes flyUp{from{transform:translateY(0);opacity:1}to{transform:translateY(-40px);opacity:0}}
+.fly-acorn{position:fixed;pointer-events:none;font-size:1.2rem;font-weight:800;color:var(--gold);z-index:9999;animation:flyUp 1s ease-out forwards}
+@keyframes slideIn{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.slide-in{animation:slideIn .3s ease-out}
+/* Discard animations */
+@keyframes discardFly{0%{transform:translateY(0) scale(1) rotate(0deg);opacity:1}60%{transform:translateY(-60px) scale(.85) rotate(-12deg);opacity:.9}100%{transform:translateY(30px) scale(.7) rotate(8deg);opacity:0}}
+@keyframes discardFlyRight{0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1}100%{transform:translate(120px,-30px) scale(.7) rotate(14deg);opacity:0}}
+@keyframes cardDealIn{from{transform:translateY(-24px) scale(.88);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes fanNewCard{from{transform:translateY(-16px) scale(.92);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.card-deal-anim{animation:cardDealIn .22s ease-out}
+.fan-new-anim{animation:fanNewCard .2s ease-out}
+.discard-fly-anim{animation:discardFly .32s ease-in forwards;pointer-events:none;position:relative;z-index:50}
+
+/* responsive */
+@media(max-width:600px){
+  .den-grid{grid-template-columns:repeat(2,1fr)}
+  .pick-grid{grid-template-columns:repeat(1,1fr)}
+  .hand-reveal{grid-template-columns:1fr}
+  .card{width:64px;height:90px}
+  .card-rank{font-size:1.3rem}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- TOPBAR (shown during gameplay) -->
+<div class="topbar" id="topbar" style="display:none">
+  <div class="brand"><span style="font-size:1.3rem">🥊</span> SlamPigs <span class="brand-sub">Rummy Den</span></div>
+  <div class="top-stats">
+    <div class="stat-pill"><span class="label">ACORNS</span> <span id="stat-acorns">0</span> 🌰</div>
+    <div class="stat-pill"><span class="label">DEN</span> <span id="stat-den">1/8</span></div>
+    <div class="stat-pill" id="stat-deck-pill"><span class="label">DECK</span> <span id="stat-deck">52</span></div>
+    <button class="btn btn-ghost btn-sm" onclick="showCharmsSummary()">🧿 Charms</button>
+      <button class="btn btn-ghost btn-sm" onclick="showTutorial()">❓ Help</button>
+  </div>
+</div>
+
+<!-- TITLE SCREEN -->
+<div class="screen active" id="screen-title">
+  <div class="panel" style="max-width:600px;margin:0 auto">
+    <div class="title-pig">
+      <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 18px rgba(255,95,150,.5))">
+        <!-- Head -->
+        <ellipse cx="60" cy="68" rx="38" ry="34" fill="#f4a0b0"/>
+        <!-- Ears -->
+        <ellipse cx="26" cy="46" rx="12" ry="14" fill="#f4a0b0"/>
+        <ellipse cx="94" cy="46" rx="12" ry="14" fill="#f4a0b0"/>
+        <ellipse cx="26" cy="46" rx="7" ry="9" fill="#e06080"/>
+        <ellipse cx="94" cy="46" rx="7" ry="9" fill="#e06080"/>
+        <!-- Luchador mask base — deep crimson -->
+        <ellipse cx="60" cy="64" rx="36" ry="32" fill="#b81c2c"/>
+        <!-- Mask eye holes — gold outlined -->
+        <ellipse cx="44" cy="60" rx="11" ry="9" fill="#f4a0b0" stroke="#e8a830" stroke-width="2.5"/>
+        <ellipse cx="76" cy="60" rx="11" ry="9" fill="#f4a0b0" stroke="#e8a830" stroke-width="2.5"/>
+        <!-- Eyes -->
+        <ellipse cx="44" cy="61" rx="5" ry="5.5" fill="#1a0808"/>
+        <ellipse cx="76" cy="61" rx="5" ry="5.5" fill="#1a0808"/>
+        <circle cx="42" cy="59" r="1.5" fill="white"/>
+        <circle cx="74" cy="59" r="1.5" fill="white"/>
+        <!-- Mask decorative stripes — gold -->
+        <path d="M24 52 Q60 38 96 52" stroke="#e8a830" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <line x1="60" y1="38" x2="60" y2="96" stroke="#e8a830" stroke-width="2" opacity=".6"/>
+        <!-- Nose -->
+        <ellipse cx="60" cy="82" rx="14" ry="10" fill="#e06080"/>
+        <ellipse cx="55" cy="81" rx="4" ry="5" fill="#c03050"/>
+        <ellipse cx="65" cy="81" rx="4" ry="5" fill="#c03050"/>
+        <!-- Mouth — grinning -->
+        <path d="M46 92 Q60 102 74 92" stroke="#8a2030" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <!-- Mask chin strap detail -->
+        <path d="M28 82 Q22 96 32 106 Q46 114 60 114 Q74 114 88 106 Q98 96 92 82" stroke="#e8a830" stroke-width="2" fill="none" opacity=".7"/>
+        <!-- Tiny star emblems on mask -->
+        <text x="38" y="48" font-size="8" fill="#e8a830" text-anchor="middle">★</text>
+        <text x="82" y="48" font-size="8" fill="#e8a830" text-anchor="middle">★</text>
+      </svg>
+    </div>
+    <div class="title-logo">SlamPigs</div>
+    <div class="title-sub">RUMMY DEN</div>
+    <div class="title-desc">
+      Build melds, outsmart the pack, and Slam Down before they do.<br>
+      A roguelike Gin Rummy crawl through 8 increasingly savage dens.
+    </div>
+    <div class="title-feat">
+      <span class="feat-pill">🎴 Gin Rummy</span>
+      <span class="feat-pill">🗺️ 8 Dens</span>
+      <span class="feat-pill">🐖 Wild Pigs</span>
+      <span class="feat-pill">🧿 Charms</span>
+      <span class="feat-pill">✂️ Deck Cull</span>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="startGame()" style="width:100%;margin-bottom:12px">🐾 Start Run</button>
+    <div class="note" style="text-align:center">Goal: Clear all 8 Dens — then survive endless Wilds Beyond</div>
+    <hr class="sep" style="margin-top:16px">
+    <div style="font-size:.75rem;color:var(--text-faint);margin-top:10px;line-height:1.7">
+      <b style="color:var(--text-dim)">How to play:</b> Draw from the stock or take the discard. Form <b style="color:var(--green)">Packs</b> (3+ same rank, any habitat) and <b style="color:var(--blue)">Trails</b> (3+ sequential ranks, same habitat). When your unmelded deadwood ≤ the Den's threshold, you can <b style="color:var(--pink)">Slam Down</b>! Watch out — if the opponent's deadwood is lower when you knock, you get <b style="color:var(--red)">Snouted</b> and lose the hand.
+    </div>
+  </div>
+</div>
+
+<!-- DEN MAP SCREEN -->
+<div class="screen" id="screen-map">
+  <div class="panel">
+    <div class="map-header">
+      <div class="map-title" id="map-title">🗺️ The Wilds</div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px" id="map-subtitle">Choose your next Den</div>
+    </div>
+    <!-- Difficulty selector -->
+    <div id="difficulty-row" style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap">
+      <span style="font-size:.7rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint)">DIFFICULTY</span>
+      <button class="diff-btn" id="diff-easy"   onclick="setDifficulty('easy')"   title="Opponent slams conservatively. Good for learning.">🐷 Easy</button>
+      <button class="diff-btn active" id="diff-medium" onclick="setDifficulty('medium')" title="Balanced opponent. The intended experience.">🐗 Medium</button>
+      <button class="diff-btn" id="diff-hard"   onclick="setDifficulty('hard')"   title="Opponent slams aggressively. High stakes.">💀 Hard</button>
+    </div>
+    <div class="den-grid" id="den-grid"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:10px">
+      <div>
+        <div style="font-size:.7rem;color:var(--text-faint);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">YOUR CHARMS</div>
+        <div class="map-charms-row" id="map-charms-row">
+          <span style="font-size:.75rem;color:var(--text-faint);font-style:italic">None yet</span>
+        </div>
+      </div>
+      <div id="map-right-btn"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HAND SCREEN -->
+<div class="screen" id="screen-hand">
+  <div class="hand-topinfo">
+    <div>
+      <div class="den-info-label" id="hand-den-label">Den 1 — Bunny Burrow</div>
+      <div style="font-size:.7rem;color:var(--text-faint);margin-top:2px" id="hand-threshold-label">Knock threshold: 12 · Hand 1 of 3</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="hand-score-pips" class="hand-score-pips"></div>
+      <div>
+        <div class="vs-label">FIRST TO <span id="hand-first-to">2</span></div>
+        <div id="hand-modifier-line" style="margin-top:2px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field-wrap">
+    <!-- OPPONENT -->
+    <div class="opp-zone">
+      <div class="zone-label">
+        <span id="opp-zone-label">OPPONENT</span>
+        <span id="opp-thinking-label" class="opp-thinking" style="display:none">Thinking…</span>
+      </div>
+      <div class="opp-cards-row" id="opp-cards-row"></div>
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-zone">
+      <div class="pile-area">
+        <div class="pile-title">STOCK</div>
+        <div class="stock-stack" id="stock-pile" onclick="doDrawStock()">
+          <div class="stock-card">🐖</div>
+          <div class="stock-card">🐖</div>
+          <div class="stock-card">🐖</div>
+        </div>
+        <div class="pile-count" id="stock-count">32</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+        <div id="log-zone" class="log-bar" style="width:100%;max-width:500px;text-align:center">Welcome to the Wilds.</div>
+        <div id="meld-groups-area" class="meld-groups-row" style="justify-content:center;display:none"></div>
+      </div>
+    </div>
+
+    <!-- DISCARD FAN -->
+    <div id="discard-fan-wrap" style="background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-wrap:wrap;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--text-faint);text-transform:uppercase">DISCARD PILE</span>
+          <span id="discard-count-label" style="font-size:.65rem;color:var(--text-faint);font-family:'Space Mono',monospace"></span>
+        </div>
+        <span id="discard-fan-hint" style="font-size:.68rem;color:var(--text-faint);font-style:italic"></span>
+      </div>
+      <div id="discard-fan" style="display:flex;align-items:flex-end;gap:4px;min-height:80px;flex-wrap:wrap;"></div>
+    </div>
+
+    <!-- LOG -->
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap" id="ability-bar"></div>
+
+    <!-- PLAYER ZONE -->
+    <div class="player-zone">
+      <div class="zone-label">
+        <span>YOUR HAND</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:.6rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint)">FILTER</span>
+          <button id="sort-rank-btn" onclick="toggleSort('rank')" title="Sort by rank (1→14)" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.62rem;font-weight:700;color:var(--text-faint);cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif">123</button>
+          <button id="sort-hab-btn" onclick="toggleSort('habitat')" title="Sort by habitat" style="background:transparent;border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.62rem;font-weight:700;color:var(--text-faint);cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif">🌿</button>
+          <span id="player-phase-hint" style="color:var(--gold);font-size:.72rem"></span>
+        </div>
+      </div>
+      <!-- Committed melds row (elevated) -->
+      <div class="meld-zone-wrap" id="meld-zone-wrap">
+        <div class="meld-zone-label">✓ MELDS</div>
+        <div class="meld-zone-row" id="meld-zone-row"></div>
+      </div>
+      <!-- Deadwood (unmelded) cards -->
+      <div id="deadwood-zone-label" class="deadwood-zone-label" style="display:none">DEADWOOD</div>
+      <div class="player-hand-row" id="player-hand-row"></div>
+    </div>
+  </div>
+
+  <!-- Score Ticker -->
+  <div id="score-ticker" style="background:var(--panel);border:2px solid var(--border);border-radius:var(--radius);padding:10px 16px;min-height:44px;display:flex;align-items:center">
+    <span style="color:var(--text-faint);font-size:.75rem">Set melds to see score</span>
+  </div>
+
+  <div class="hand-bottom">
+    <div class="dw-display">
+      <div>
+        <div class="dw-label">PENALTY</div>
+        <div class="dw-val" id="dw-display">--</div>
+      </div>
+      <div class="meld-summary" id="meld-summary"></div>
+    </div>
+    <div class="action-btns" style="flex-wrap:wrap">
+      <button class="btn-set-meld" id="btn-set-meld" onclick="doSetMeld()" disabled>＋ Set Meld</button>
+      <button class="btn-clear-sel" id="btn-clear-sel" onclick="clearSelection()" style="display:none">✕ Clear</button>
+      <button class="btn btn-ghost" id="btn-discard" onclick="doDiscard()" disabled>Discard</button>
+      <button class="btn btn-primary" id="btn-slam" onclick="doSlamDown()" disabled>🐾 Slam Down!</button>
+    </div>
+  </div>
+</div>
+
+<!-- HAND RESULT MODAL -->
+<div class="modal-bg hidden" id="modal-hand-result">
+  <div class="modal slide-in">
+    <div class="modal-title" id="hand-result-title">Hand Result</div>
+    <div class="hand-reveal" id="hand-reveal"></div>
+    <div class="modal-body" id="hand-result-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="nextHandOrDenResult()">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- DEN RESULT SCREEN -->
+<div class="screen" id="screen-den-result">
+  <div class="panel" style="max-width:540px;margin:0 auto">
+    <div class="result-hero" id="den-result-hero"></div>
+  </div>
+</div>
+
+<!-- WILD PIG DRAFT -->
+<div class="screen" id="screen-draft">
+  <div class="panel" style="max-width:600px;margin:0 auto">
+    <div style="margin-bottom:16px">
+      <div class="map-title" style="font-size:1.4rem">🐖 Wild Pig Draft</div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px">Choose one Wild Pig to add to your deck, or skip.</div>
+    </div>
+    <div class="pick-grid" id="draft-pick-grid"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px" id="draft-btns">
+      <button class="btn btn-gold" id="btn-draft-confirm" onclick="confirmDraft()" disabled>Add to Deck</button>
+      <button class="btn btn-ghost" onclick="skipDraft()">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- DECK CULL -->
+<div class="screen" id="screen-cull">
+  <div class="panel" style="max-width:700px;margin:0 auto">
+    <div style="margin-bottom:12px">
+      <div class="map-title" style="font-size:1.4rem">✂️ Cull Your Deck</div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px">Remove one card from your deck permanently. Thinning your deck helps you draw what you need.</div>
+    </div>
+    <div class="cull-zone" id="cull-zone"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <button class="btn btn-primary" id="btn-cull-confirm" onclick="confirmCull()" disabled>✂️ Remove Selected</button>
+      <button class="btn btn-ghost" onclick="skipCull()">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="screen" id="screen-shop">
+  <div class="panel" style="max-width:540px;margin:0 auto">
+    <div style="margin-bottom:16px">
+      <div class="map-title" style="font-size:1.4rem">🛒 Charm Shop</div>
+      <div style="font-size:.8rem;color:var(--text-dim);margin-top:4px" id="shop-subtitle">Spend Acorns on permanent Charms.</div>
+    </div>
+    <div id="shop-items" style="display:flex;flex-direction:column;gap:10px"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-ghost" onclick="leaveShop()">Back to Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div class="screen" id="screen-gameover">
+  <div class="panel" style="max-width:500px;margin:0 auto">
+    <div class="gameover-wrap" id="gameover-content"></div>
+  </div>
+</div>
+
+<!-- CHARMS SUMMARY MODAL -->
+<div class="modal-bg hidden" id="modal-charms">
+  <div class="modal slide-in">
+    <div class="modal-title">🧿 Your Charms</div>
+    <div id="charms-modal-body" class="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="closeModal('modal-charms')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- GENERIC MODAL -->
+<div class="modal-bg hidden" id="modal-generic">
+  <div class="modal slide-in">
+    <div class="modal-title" id="gen-modal-title"></div>
+    <div class="modal-body" id="gen-modal-body"></div>
+    <div class="modal-btns" id="gen-modal-btns"></div>
+  </div>
+</div>
+
+<!-- TUTORIAL MODAL -->
+<div class="modal-bg hidden" id="modal-tutorial">
+  <div class="modal slide-in" style="max-width:640px;max-height:88vh;overflow-y:auto">
+    <div class="modal-title">❓ How to Play SlamPigs</div>
+    <div id="tutorial-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="tut-tab active" onclick="tutTab('basics')">Basics</button>
+      <button class="tut-tab" onclick="tutTab('scoring')">Scoring</button>
+      <button class="tut-tab" onclick="tutTab('pigs')">Wild Pigs</button>
+      <button class="tut-tab" onclick="tutTab('charms')">Charms</button>
+    </div>
+    <div id="tutorial-content"></div>
+    <div class="modal-btns" style="margin-top:16px">
+      <button class="btn btn-primary" onclick="closeModal('modal-tutorial')">Got it!</button>
+    </div>
+  </div>
+</div>
+
+</div> <!-- /app -->
+
+<script>
+// ================================================================
+// DATA
+// ================================================================
+const RANKS=[
+  {value:2, name:'Piglet',       emoji:'🐷', flavor:"Too cute to take seriously. Fatal mistake."},
+  {value:3, name:'Cop Pig',      emoji:'🐽', flavor:"On the take. Always."},
+  {value:4, name:'Pig in Mud',   emoji:'🐖', flavor:"Wallowing in your misfortune"},
+  {value:5, name:'Pig-in-Blanket',emoji:'🌯',flavor:"Wrapped up, ready to roll"},
+  {value:6, name:'Lipstick Pig', emoji:'💄', flavor:"Dressed up, still a pig"},
+  {value:7, name:'Biker Hog',    emoji:'🏍️', flavor:"No helmet, no rules, no mercy"},
+  {value:8, name:'Corporate Hog',emoji:'💼', flavor:"Will restructure your melds"},
+  {value:9, name:'Ninja Pig',    emoji:'🥷', flavor:"You never saw it coming"},
+  {value:10,name:'Gym Pig',      emoji:'🏋️', flavor:"Been benching the discard pile"},
+  {value:11,name:'Wizard Pig',   emoji:'🧙', flavor:"Casts Summon Deadwood III"},
+  {value:12,name:'Pirate Hog',   emoji:'🏴‍☠️', flavor:"Raids the stock pile nightly"},
+  {value:13,name:'Royal Boar',   emoji:'👑', flavor:"By decree: you lose this hand"},
+  {value:14,name:'Big Pig',      emoji:'🐗', flavor:"The final boss was a pig all along"},
+];
+const HABS=[
+  {id:'forest',name:'Bacon',    emoji:'🥓'},
+  {id:'plains',name:'Sausage',  emoji:'🌭'},
+  {id:'tundra',name:'Pork Rind',emoji:'🍿'},
+  {id:'swamp',name:'Ribs',     emoji:'🍖'},
+];
+const RANK_BY_VAL={};
+RANKS.forEach(r=>RANK_BY_VAL[r.value]=r);
+
+const WILD_PIGS={
+  // Each pig has scoring triggers that fire during resolveSlam.
+  // chips: flat chips added    mult: multiplier added (additive to running mult)
+  // multMul: multiplier multiplied (Balatro "xMult")
+  // trigger: when the effect fires (always/perMeld/perPack/perTrail/ifClean/perWild)
+  mud_pig:{id:'mud_pig',name:'Mud Pig',emoji:'🐖',rarity:'common',
+    trueWild:true,unmeldedChips:0,
+    scoring:[{trigger:'perWild',chips:20,desc:'+20 chips each time a Wild is used in a meld'}],
+    desc:'True wildcard. Each wild used in a meld scores +20 chips.'},
+  truffle_pig:{id:'truffle_pig',name:'Truffle Pig',emoji:'🐽',rarity:'common',
+    peekOnDiscard:3,unmeldedChips:0,
+    scoring:[{trigger:'perPack',multMul:2,desc:'Each Pack scores ×2 mult'}],
+    desc:'Peek top 3 stock on discard. Each Pack you set scores ×2 mult.'},
+  piggy_bank:{id:'piggy_bank',name:'Piggy Bank',emoji:'🐷',rarity:'common',
+    unmeldedChips:0,
+    scoring:[{trigger:'always',chips:0,bankPct:0.5,desc:'Bank 50% of score for next hand'}],
+    desc:'Banks 50% of your score this hand — paid out as bonus chips next hand.'},
+  show_pig:{id:'show_pig',name:'Show Pig',emoji:'🎀',rarity:'rare',
+    revealOpponent:true,unmeldedChips:0,
+    scoring:[{trigger:'firstMeld',mult:3,desc:'+3 mult on your first meld each hand'}],
+    desc:'Reveal opponent top deadwood. First meld each hand: +3 mult.'},
+  greased_piglet:{id:'greased_piglet',name:'Greased Piglet',emoji:'🐽',rarity:'rare',
+    offTurnSwap:true,unmeldedChips:0,
+    scoring:[{trigger:'perDiscard',chips:15,desc:'+15 chips if discarded card scores ≥10'}],
+    desc:'Off-turn discard swap. Each high discard (≥10 chips) gives +15 chips.'},
+  guard_hog:{id:'guard_hog',name:'Guard Hog',emoji:'🐗',rarity:'rare',
+    zeroDW:true,unmeldedChips:0,
+    scoring:[{trigger:'always',permMult:0.5,desc:'Permanently +0.5 mult each hand you set a meld with Guard Hog'}],
+    desc:'0 deadwood. Each hand Guard Hog is in a meld, gain +0.5 permanent mult.'},
+  boss_hog:{id:'boss_hog',name:'Boss Hog',emoji:'👑',rarity:'legendary',
+    trueWild:true,dualMeld:true,unmeldedChips:0,
+    scoring:[{trigger:'perWolfInHand',chips:8,desc:'+8 chips per Wolf card held at slam'}],
+    desc:'True wildcard. +8 chips for every Wolf card in your hand when you Slam.'},
+  hog_wild:{id:'hog_wild',name:'Hog Wild',emoji:'🌀',rarity:'legendary',
+    rerollEachTurn:true,unmeldedChips:0,
+    scoring:[{trigger:'ifRollWolf',multMul:3,desc:'If rolled to 7 (Wolf) this turn: ×3 mult'}],
+    desc:'Rerolls rank 2-14 each turn. If it rolled Wolf (7): ×3 mult this hand.'},
+};
+const FERAL_CARDS={
+  feral_fox:{id:'feral_fox',name:'Sly Fox',emoji:'🦊',unmeldedDW:13,feral:true},
+  grizzly:{id:'grizzly',name:'Grizzly',emoji:'🐻',unmeldedDW:11,feral:true},
+  tiger_cub:{id:'tiger_cub',name:'Tiger Cub',emoji:'🐯',unmeldedDW:10,feral:true},
+  alphas_pride:{id:'alphas_pride',name:"Alpha's Pride",emoji:'🦁',unmeldedDW:16,feral:true},
+};
+const CHARMS={
+  // PLANET CARDS — permanent meld-type upgrades
+  acorn_oak:{id:'acorn_oak',name:'Acorn Oak',emoji:'🌳',rarity:'common',price:50,kind:'planet',
+    desc:'Trails permanently score +1 mult each.',trailMult:1},
+  pack_leader:{id:'pack_leader',name:'Pack Leader',emoji:'🐺',rarity:'common',price:50,kind:'planet',
+    desc:'Packs of 4+ score +20 chips and +1 mult extra.',bigPackBonus:true},
+  forest_floor:{id:'forest_floor',name:'Forest Floor',emoji:'🌿',rarity:'common',price:60,kind:'planet',
+    desc:'Forest-habitat melds each add +0.5 mult.',forestMult:0.5},
+  ancient_trail:{id:'ancient_trail',name:'Ancient Trail',emoji:'🗺️',rarity:'rare',price:100,kind:'planet',
+    desc:'Trails of 5+ cards score ×2 mult (multiplicative).',longTrailMultMul:2},
+  wolf_moon:{id:'wolf_moon',name:'Wolf Moon',emoji:'🌕',rarity:'rare',price:110,kind:'planet',
+    desc:'Each Wolf card in any of your melds adds +10 chips.',wolfChips:10},
+  tusk_polish:{id:'tusk_polish',name:'Tusk Polish',emoji:'🦷',rarity:'legendary',price:180,kind:'planet',
+    desc:'Every 4th meld you ever set permanently adds +1 mult.',meldMilestone:true},
+
+  // TAROT CARDS — one-use power plays (active abilities)
+  second_wind:{id:'second_wind',name:'Second Wind',emoji:'💨',rarity:'common',price:50,kind:'tarot',active:true,
+    desc:'Once per hand: redeal your hand from the stock.'},
+  mirror_pond:{id:'mirror_pond',name:'Mirror Pond',emoji:'🪞',rarity:'rare',price:100,kind:'tarot',active:true,
+    desc:'Once per hand: pull any rank directly from the stock.'},
+  stampede:{id:'stampede',name:'The Stampede',emoji:'🦬',rarity:'rare',price:100,kind:'tarot',active:true,
+    desc:'Once per hand: this hand Bison and Bear score triple chips.'},
+  alphas_mark:{id:'alphas_mark',name:"Alpha's Mark",emoji:'⭐',rarity:'legendary',price:160,kind:'tarot',active:true,
+    desc:"Once per run: one card in your next meld counts as any rank."},
+  thick_hide:{id:'thick_hide',name:'Thick Hide',emoji:'🛡️',rarity:'rare',price:110,kind:'tarot',
+    desc:'Ignore the first time you fall short of the score target each Den.'},
+  golden_trough:{id:'golden_trough',name:'Golden Trough',emoji:'🏆',rarity:'legendary',price:180,kind:'tarot',
+    desc:'All Acorn rewards this run are doubled.'},
+};
+const DENS=[
+  // scoreTarget: chips×mult needed to win a hand
+  // handsToWin: first to this many hand-wins takes the Den
+  // bossRule: special rule that fires during the hand (null = Small/Big Blind)
+  {num:1,name:'Bunny Burrow',boss:'Bunny Brigade',emoji:'🐰',
+    scoreTarget:150,handsToWin:2,startHandSize:10,rankBuffs:{},ferals:[],
+    acorns:40,wildPool:['common'],wildChoices:2,shop:false,deckCull:false,
+    bossRule:null,blindType:'small'},
+  {num:2,name:'Fox Hollow',boss:'Sly Fox Gang',emoji:'🦊',
+    scoreTarget:220,handsToWin:2,startHandSize:10,rankBuffs:{},ferals:['feral_fox'],
+    acorns:55,wildPool:['common','rare'],wildChoices:3,shop:true,shopSize:1,deckCull:false,
+    bossRule:null,blindType:'big'},
+  {num:3,name:'Wolf Pack Pass',boss:'Howling Pack',emoji:'🐺',
+    scoreTarget:320,handsToWin:2,startHandSize:10,rankBuffs:{7:2},ferals:[],
+    acorns:70,wildPool:['common','rare'],wildChoices:3,shop:true,shopSize:1,deckCull:true,
+    bossRule:{id:'wolf_tax',name:'Wolf Tax',desc:'Each Wolf in your melds scores ×2 chips — but each Wolf in deadwood costs ×2 chips penalty.'},
+    blindType:'boss'},
+  {num:4,name:'Bear Cave',boss:'Cave Grizzlies',emoji:'🐻',
+    scoreTarget:450,handsToWin:2,startHandSize:10,rankBuffs:{},ferals:['grizzly','grizzly'],
+    acorns:85,wildPool:['common','rare'],wildChoices:3,shop:true,shopSize:1,deckCull:false,
+    bossRule:{id:'trail_curse',name:'Trail Curse',desc:'Trails score no mult this Den — only chips. Build Packs.'},
+    blindType:'boss'},
+  {num:5,name:'Bison Stampede',boss:'Thundering Herd',emoji:'🦬',
+    scoreTarget:600,handsToWin:2,startHandSize:10,rankBuffs:{10:4},ferals:['feral_fox'],
+    acorns:100,wildPool:['common','rare','legendary'],wildChoices:3,shop:true,shopSize:2,deckCull:true,
+    bossRule:{id:'stampede_clock',name:'Stampede Clock',desc:'You have only 8 turns to Slam. Every 2 turns without slamming costs 50 chips from your score.'},
+    blindType:'boss'},
+  {num:6,name:'Gorilla Temple',boss:'Temple Guardians',emoji:'🦍',
+    scoreTarget:800,handsToWin:2,startHandSize:10,rankBuffs:{11:3},ferals:['grizzly'],
+    acorns:120,wildPool:['common','rare','legendary'],wildChoices:3,shop:true,shopSize:2,deckCull:false,
+    bossRule:{id:'mirror_rule',name:"Monkey See",desc:"Opponent copies your highest meld's chip value."},
+    blindType:'boss'},
+  {num:7,name:"Tiger's Lair",boss:'Tiger Triplets',emoji:'🐯',
+    scoreTarget:1100,handsToWin:2,startHandSize:10,rankBuffs:{12:2},ferals:['tiger_cub','tiger_cub','tiger_cub'],
+    acorns:140,wildPool:['common','rare','legendary'],wildChoices:3,shop:true,shopSize:2,deckCull:true,
+    bossRule:{id:'triple_threat',name:'Triple Threat',desc:'Must set at least 3 melds to Slam. 1-2 melds: score halved.'},
+    blindType:'boss'},
+  {num:8,name:"The Alpha's Den",boss:'The Alpha Lion',emoji:'🦁',
+    scoreTarget:1800,handsToWin:3,startHandSize:10,rankBuffs:{11:2,12:2,13:2,14:2},ferals:['alphas_pride','alphas_pride'],
+    acorns:250,wildPool:['rare','legendary'],wildChoices:3,shop:true,shopSize:2,deckCull:true,
+    bossRule:{id:'alpha_mirrors',name:"Alpha Mirrors",desc:'Opponent starts with your mult from last hand. Score 2× target to truly win.'},
+    blindType:'final',isFinal:true,guaranteedLegendary:true},
+];
+
+// ================================================================
+// GAME STATE
+// ================================================================
+let G={
+  difficulty:'medium', // 'easy'|'medium'|'hard'
+  acorns:0,
+  currentDen:0,
+  densCleared:0,
+  isEndless:false,
+  endlessCount:0,
+  charms:[],
+  playerDeck:[],
+  // per-den
+  denPlayerWins:0,
+  denOppWins:0,
+  thickHideUsed:false,
+  // per-hand
+  playerHand:[],
+  oppHand:[],
+  stock:[],
+  discardPile:[],
+  phase:'draw', // draw | discard | opp | over
+  handSort:'dealt', // 'dealt' | 'rank' | 'habitat'
+  selectedCardIdx:null,
+  selectedCardIds:new Set(),
+  committedMelds:[],  // [{type,cardIds:[...],hab?,scoreResult?}]
+
+  handNum:0,
+  handAcorns:0,
+  // Balatro-style scoring state
+  lastHandScore:0,        // chips×mult from last hand (for Piggy Bank carry)
+  piggyBankStored:0,      // chips banked to next hand
+  permanentMult:1,        // Guard Hog builds this up over run
+  totalMeldsSet:0,        // for Tusk Polish milestone
+  stampedeTurnActive:false, // The Stampede tarot
+  alphasMarkActive:false,   // Alpha's Mark tarot
+  turnCount:0,            // for Stampede Clock boss rule
+  thickHideUsed:false,
+  // ability uses
+  secondWindUsed:false,
+  mirrorPondUsed:false,
+  stoneSkinUsed:false,
+  stoneSkinActive:false,
+  stoneSkinCardId:null,
+  showPigUsed:false,
+  greasedPigletUsed:false,
+  hogWildRolls:{},
+  fanSelectedIdx:null,
+  // peek state
+  peekActive:false,
+  peekCards:[],
+};
+
+let nextCardId=1;
+function mkId(){return nextCardId++;}
+
+// ================================================================
+// CARD FACTORIES
+// ================================================================
+function makeAnimalCard(rank,hab){
+  return{id:mkId(),kind:'animal',value:rank.value,name:rank.name,emoji:rank.emoji,hab,habEmoji:HABS.find(h=>h.id===hab).emoji};
+}
+function makeWildPig(pigId){
+  const p=WILD_PIGS[pigId];
+  return{id:mkId(),kind:'wild',wildId:pigId,name:p.name,emoji:p.emoji,rarity:p.rarity};
+}
+function makeFeralCard(feralId){
+  const f=FERAL_CARDS[feralId];
+  return{id:mkId(),kind:'feral',feralId,name:f.name,emoji:f.emoji};
+}
+function buildStandardDeck(){
+  const deck=[];
+  for(const r of RANKS)for(const h of HABS)deck.push(makeAnimalCard(r,h.id));
+  return deck;
+}
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ================================================================
+// EFFECTIVE VALUE (for meld solver & deadwood)
+// ================================================================
+function effectiveValue(card,rankBuffs){
+  if(card.kind==='wild'){
+    const p=WILD_PIGS[card.wildId];
+    if(p.rerollEachTurn)return G.hogWildRolls[card.id]||7;
+    return null; // true wild or fixed DW card
+  }
+  if(card.kind==='feral') return null;
+  let v=card.value;
+  if(rankBuffs&&rankBuffs[card.value]) v+=rankBuffs[card.value];
+  return v;
+}
+
+function cardDeadwoodCost(card,rankBuffs){
+  if(card.kind==='wild'){
+    const p=WILD_PIGS[card.wildId];
+    if(p.zeroDW) return 0;
+    if(p.rerollEachTurn) return 0; // guard hog uses zeroDW; hog_wild 0 unmelded too
+    // stone skin
+    if(G.stoneSkinCardId===card.id) return 0;
+    return p.unmeldedDW||0;
+  }
+  if(card.kind==='feral'){
+    if(G.stoneSkinCardId===card.id) return 0;
+    return FERAL_CARDS[card.feralId].unmeldedDW||10;
+  }
+  // animal
+  if(G.stoneSkinCardId===card.id) return 0;
+  let v=card.value;
+  if(rankBuffs&&rankBuffs[card.value]) v+=rankBuffs[card.value];
+  // charm: early_riser
+  if(G.charms.includes('early_riser')){
+    const c=CHARMS['early_riser'];
+    if(c.animals.includes(card.name)) return 0;
+  }
+  // charm: clover, horseshoe
+  for(const cid of['clover','horseshoe']){
+    if(G.charms.includes(cid)){
+      const c=CHARMS[cid];
+      if(c.animals.includes(card.name)) v=Math.max(0,v-c.dwReduce);
+    }
+  }
+  return v;
+}
+
+// ================================================================
+// MELD SOLVER (bitmask DP)
+// ================================================================
+function solveMelds(hand,rankBuffs,forPlayer){
+  const n=hand.length;
+  if(n===0)return{melds:[],deadwood:[],totalDW:0};
+
+  // min pack size
+  function minPackSize(name){
+    if(forPlayer&&G.charms.includes('pack_tactics')){
+      if(CHARMS['pack_tactics'].animals.includes(name)) return 2;
+    }
+    return 3;
+  }
+
+  // for each card, compute effective value for meld participation
+  // trueWild can sub any rank; hogWild uses rolled value
+  function cardMeldValue(card){
+    if(card.kind==='wild'){
+      const p=WILD_PIGS[card.wildId];
+      if(p.trueWild) return 'wild';
+      if(p.rerollEachTurn) return G.hogWildRolls[card.id]||7;
+      return null; // other wild pigs don't participate in melds as rank
+    }
+    if(card.kind==='feral') return null;
+    let v=card.value;
+    if(rankBuffs&&rankBuffs[card.value]) v+=rankBuffs[card.value];
+    return v;
+  }
+
+  // Generate candidates
+  const candidates=[];
+
+  // Group by meld value for packs
+  const byVal={};
+  const wilds=[];
+  for(let i=0;i<n;i++){
+    const mv=cardMeldValue(hand[i]);
+    if(mv==='wild') wilds.push(i);
+    else if(mv!==null)(byVal[mv]=byVal[mv]||[]).push(i);
+  }
+
+  // Packs
+  for(const v in byVal){
+    const idxs=byVal[v];
+    const ps=minPackSize(hand[idxs[0]].name);
+    if(idxs.length>=ps){
+      // all same-val cards = one pack
+      let mask=0,dv=0;
+      idxs.forEach(i=>{mask|=(1<<i);dv+=cardDeadwoodCost(hand[i],rankBuffs);});
+      candidates.push({type:'pack',mask,val:dv,cards:idxs.map(i=>i)});
+    } else if(idxs.length===ps-1&&wilds.length>0){
+      // one wild can complete it
+      for(const wi of wilds){
+        let mask=(1<<wi),dv=cardDeadwoodCost(hand[wi],rankBuffs);
+        idxs.forEach(i=>{mask|=(1<<i);dv+=cardDeadwoodCost(hand[i],rankBuffs);});
+        candidates.push({type:'pack',mask,val:dv,cards:[wi,...idxs]});
+      }
+    }
+  }
+
+  // Trails: by habitat, sequential
+  for(const hab of HABS){
+    const habIdxs=[];
+    for(let i=0;i<n;i++){
+      if(hand[i].kind==='animal'&&hand[i].hab===hab.id) habIdxs.push(i);
+    }
+    habIdxs.sort((a,b)=>cardMeldValue(hand[a])-cardMeldValue(hand[b]));
+
+    // find maximal sequential runs, optionally bridging one gap with a wild
+    function tryAddTrail(runIdxs){
+      if(runIdxs.length<3) return;
+      let mask=0,dv=0;
+      runIdxs.forEach(i=>{mask|=(1<<i);dv+=cardDeadwoodCost(hand[i],rankBuffs);});
+      candidates.push({type:'trail',mask,val:dv,cards:runIdxs.slice(),hab:hab.id});
+      // also sub-runs of length 3+
+      if(runIdxs.length>3){
+        for(let s=0;s+2<runIdxs.length;s++){
+          for(let e=s+2;e<runIdxs.length;e++){
+            if(e-s+1>=3){
+              let m2=0,dv2=0;
+              for(let k=s;k<=e;k++){m2|=(1<<runIdxs[k]);dv2+=cardDeadwoodCost(hand[runIdxs[k]],rankBuffs);}
+              candidates.push({type:'trail',mask:m2,val:dv2,cards:runIdxs.slice(s,e+1),hab:hab.id});
+            }
+          }
+        }
+      }
+    }
+
+    let run=[habIdxs[0]];
+    for(let k=1;k<habIdxs.length;k++){
+      const prev=cardMeldValue(hand[run[run.length-1]]);
+      const cur=cardMeldValue(hand[habIdxs[k]]);
+      if(cur===prev+1) run.push(habIdxs[k]);
+      else{
+        tryAddTrail(run);
+        run=[habIdxs[k]];
+      }
+    }
+    tryAddTrail(run);
+
+    // wild-bridged trails
+    if(wilds.length>0){
+      for(let a=0;a<habIdxs.length-1;a++){
+        for(let b=a+1;b<habIdxs.length;b++){
+          const va=cardMeldValue(hand[habIdxs[a]]);
+          const vb=cardMeldValue(hand[habIdxs[b]]);
+          if(vb-va===2){
+            // try to bridge with each wild
+            for(const wi of wilds){
+              const run3=[habIdxs[a],wi,habIdxs[b]];
+              let mask=0,dv=0;
+              run3.forEach(i=>{mask|=(1<<i);dv+=cardDeadwoodCost(hand[i],rankBuffs);});
+              candidates.push({type:'trail',mask,val:dv,cards:run3,hab:hab.id});
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Bitmask DP
+  const full=(1<<n)-1;
+  const memo=new Map();
+  const chosen=new Map();
+
+  function dp(mask){
+    if(mask===0) return 0;
+    if(memo.has(mask)) return memo.get(mask);
+    let best=0,bestC=-1;
+    for(let ci=0;ci<candidates.length;ci++){
+      const c=candidates[ci];
+      if((c.mask&mask)===c.mask&&c.mask!==0){
+        const sub=dp(mask&~c.mask);
+        if(c.val+sub>best){best=c.val+sub;bestC=ci;}
+      }
+    }
+    memo.set(mask,best);
+    chosen.set(mask,bestC);
+    return best;
+  }
+  dp(full);
+
+  // Reconstruct
+  const usedMask=new Set();
+  const melds=[];
+  let cur=full;
+  while(cur!==0){
+    const ci=chosen.get(cur);
+    if(ci===-1||ci===undefined) break;
+    const c=candidates[ci];
+    melds.push({type:c.type,cards:c.cards.map(i=>hand[i]),hab:c.hab||null});
+    usedMask.add(c.mask);
+    cur&=~c.mask;
+  }
+
+  const meldedIds=new Set();
+  melds.forEach(m=>m.cards.forEach(cd=>meldedIds.add(cd.id)));
+
+  const deadwood=hand.filter(c=>!meldedIds.has(c.id));
+  let totalDW=0;
+  deadwood.forEach(c=>totalDW+=cardDeadwoodCost(c,rankBuffs));
+
+  return{melds,deadwood,totalDW};
+}
+
+// ================================================================
+// GAME FLOW
+// ================================================================
+let postDraftNext=null;
+let postCullNext=null;
+let postShopNext=null;
+
+function startGame(){
+  G.acorns=0;
+  G.currentDen=0;
+  G.densCleared=0;
+  G.isEndless=false;
+  G.endlessCount=0;
+  G.charms=[];
+  G.playerDeck=buildStandardDeck();
+  updateTopbar();
+  showScreen('screen-map');
+  document.getElementById('topbar').style.display='flex';
+  renderDenMap();
+}
+
+function getCurrentDen(){
+  if(G.isEndless){
+    const base=DENS[7];
+    return{
+      ...base,
+      name:`Wilds Beyond #${G.endlessCount}`,
+      boss:`Feral Champion #${G.endlessCount}`,
+      num:8+G.endlessCount,
+      threshold:Math.max(3,base.threshold-Math.floor(G.endlessCount/2)),
+      acorns:base.acorns+G.endlessCount*15,
+      handsToWin:G.endlessCount>=3?3:2,
+      isEndless:true,
+    };
+  }
+  return DENS[G.currentDen];
+}
+
+function renderDenMap(){
+  const grid=document.getElementById('den-grid');
+  grid.innerHTML='';
+  DENS.forEach((den,i)=>{
+    const cleared=i<G.densCleared;
+    const current=!G.isEndless&&i===G.densCleared; // next uncleared den
+    const locked=i>G.densCleared;
+    const div=document.createElement('div');
+    div.className='den-node'+(cleared?' cleared':current?' current':locked?' locked':'')+(den.isFinal?' final':'');
+    let badge='';
+    if(cleared) badge=`<span class="den-status-badge badge-cleared">✓ Done</span>`;
+    else if(current) badge=`<span class="den-status-badge badge-current">► Enter</span>`;
+    else if(den.isFinal) badge=`<span class="den-status-badge badge-final">⭐ Final</span>`;
+    const bossTag=den.bossRule?`<div style="font-size:.6rem;color:var(--pink);margin-top:2px">👁️ ${den.bossRule.name}</div>`:'';
+    div.innerHTML=`${badge}<span class="den-emoji-big">${den.emoji}</span><div class="den-num">Den ${den.num}</div><div class="den-name-label">${den.name}</div><div style="font-size:.68rem;color:var(--gold)">${den.scoreTarget.toLocaleString()} pts target</div>${bossTag}`;
+    if(!locked) div.onclick=()=>enterDen(i);
+    grid.appendChild(div);
+  });
+  if(G.isEndless){
+    const div=document.createElement('div');
+    div.className='den-node current';
+    div.innerHTML=`<span class="den-status-badge badge-current">► Enter</span><span class="den-emoji-big">🌀</span><div class="den-num">Den ${8+G.endlessCount}</div><div class="den-name-label">Wilds Beyond #${G.endlessCount}</div><div class="den-boss-label">Feral Champion</div>`;
+    div.onclick=()=>enterDen(-1);
+    grid.appendChild(div);
+  }
+  // charms row
+  const charmRow=document.getElementById('map-charms-row');
+  if(G.charms.length===0){
+    charmRow.innerHTML='<span style="font-size:.75rem;color:var(--text-faint);font-style:italic">None yet</span>';
+  } else {
+    charmRow.innerHTML=G.charms.map(cid=>{
+      const c=CHARMS[cid];
+      return `<div class="tooltip-wrap charm-mini">${c.emoji} ${c.name}<div class="tooltip-box"><div class="tooltip-title">${c.emoji} ${c.name}</div>${c.desc}</div></div>`;
+    }).join('');
+  }
+  // shop button if available
+  const rb=document.getElementById('map-right-btn');
+  const den=getCurrentDen();
+  if(den&&den.shop&&G.densCleared>=den.num&&!G.isEndless){
+    rb.innerHTML=`<button class="btn btn-gold" onclick="openShop()">🛒 Shop</button>`;
+  } else {
+    rb.innerHTML='';
+  }
+}
+
+function enterDen(idx){
+  if(idx===-1){
+    // endless
+    document.body.className='den-endless';
+  } else {
+    G.currentDen=idx;
+    document.body.className=`den-${idx+1}`;
+  }
+  const den=getCurrentDen();
+  G.denPlayerWins=0;
+  G.denOppWins=0;
+  G.thickHideUsed=false;
+  G.handNum=0;
+  startNewHand();
+}
+
+// ================================================================
+// HAND LOGIC
+// ================================================================
+function startNewHand(){
+  const den=getCurrentDen();
+  G.handNum++;
+  G.phase='draw';
+  G.selectedCardIdx=null;
+  G.handAcorns=0;
+  G.selectedCardIds=new Set();
+  G.committedMelds=[];
+  G.turnCount=0;
+  G.handSort=G.handSort||'dealt';
+  G.stampedeTurnActive=false;
+  G.secondWindUsed=false;
+  G.mirrorPondUsed=false;
+  G.stoneSkinUsed=false;
+  G.stoneSkinActive=false;
+  G.stoneSkinCardId=null;
+  G.showPigUsed=false;
+  G.greasedPigletUsed=false;
+  G.hogWildRolls={};
+  G.fanSelectedIdx=null;
+  G.peekActive=false;
+  G.peekCards=[];
+
+  // Build the shared deck
+  let deck=[...G.playerDeck];
+  // add feral cards (they go to opponent side via dealing order - simulated by shuffle)
+  den.ferals.forEach(fid=>deck.push(makeFeralCard(fid)));
+  shuffle(deck);
+
+  // deal
+  G.playerHand=deck.splice(0,den.startHandSize);
+  G.oppHand=deck.splice(0,den.startHandSize);
+  G.stock=deck;
+  G.discardPile=[];
+  // flip one card to start discard
+  if(G.stock.length>0) G.discardPile.push(G.stock.pop());
+
+  // hog wild initial roll
+  rollHogWilds(G.playerHand);
+  rollHogWilds(G.oppHand);
+
+  showScreen('screen-hand');
+  renderHandScreen();
+  setLog(`<b>Hand ${G.handNum}</b> — draw from the stock or take the discard.`);
+}
+
+function rollHogWilds(hand){
+  hand.forEach(c=>{
+    if(c.kind==='wild'&&WILD_PIGS[c.wildId].rerollEachTurn){
+      G.hogWildRolls[c.id]=Math.floor(Math.random()*13)+2;
+    }
+  });
+}
+
+function renderHandScreen(){
+  const den=getCurrentDen();
+  document.getElementById('hand-den-label').textContent=`${den.emoji} ${den.name}`;
+  const bossTag=den.bossRule?` · 👁️ ${den.bossRule.name}`:'';
+  const diffLabel={easy:'🐷',medium:'🐗',hard:'💀'}[G.difficulty]||'';
+  document.getElementById('hand-threshold-label').textContent=`${diffLabel} Target: ${den.scoreTarget.toLocaleString()} pts · Hand ${G.handNum} of best-${den.handsToWin*2-1}${bossTag}`;
+  document.getElementById('hand-first-to').textContent=den.handsToWin;
+
+  // score pips
+  const pipsEl=document.getElementById('hand-score-pips');
+  const total=den.handsToWin*2-1;
+  let html='';
+  for(let i=0;i<total;i++){
+    if(i<G.denPlayerWins) html+=`<div class="hand-pip-lg pw" title="Your win"></div>`;
+    else if(i<G.denPlayerWins+(total-G.denPlayerWins-G.denOppWins)) html+=`<div class="hand-pip-lg" title="Pending"></div>`;
+  }
+  // simpler: player wins green left, opp wins red right, rest neutral center
+  html='';
+  for(let i=0;i<den.handsToWin;i++){
+    const cls=i<G.denPlayerWins?'pw':'';
+    html+=`<div class="hand-pip-lg ${cls}"></div>`;
+  }
+  html+=`<span class="vs-label" style="margin:0 4px">VS</span>`;
+  for(let i=den.handsToWin-1;i>=0;i--){
+    const cls=i<G.denOppWins?'ow':'';
+    html+=`<div class="hand-pip-lg ${cls}"></div>`;
+  }
+  pipsEl.innerHTML=html;
+
+  // modifier line
+  const modEl=document.getElementById('hand-modifier-line');
+  let modParts=[];
+  const buffs=Object.entries(den.rankBuffs||{});
+  if(buffs.length>0) modParts.push(buffs.map(([v,b])=>{const r=RANK_BY_VAL[v];return r?`${r.emoji} +${b}`:''}).filter(Boolean).join(' '));
+  if(den.bossRule) modParts.push(`<span style="color:var(--pink)">👁️ ${den.bossRule.name}: ${den.bossRule.desc}</span>`);
+  if(modParts.length>0) modEl.innerHTML=`<span class="den-modifier-badge">${modParts.join(' · ')}</span>`;
+  else modEl.innerHTML='';
+
+  renderOppHand();
+  renderPlayerHand();
+  renderPiles();
+  renderAbilityBar();
+  renderBottomBar();
+}
+
+function renderOppHand(){
+  const row=document.getElementById('opp-cards-row');
+  row.innerHTML=G.oppHand.map(()=>`<div class="card-back">🐖</div>`).join('');
+  document.getElementById('opp-zone-label').textContent=`${getCurrentDen().boss} (${G.oppHand.length} cards)`;
+}
+
+// ── DISCARD FAN STATE ──────────────────────────────────────────
+// G.fanSelectedIdx: index into G.discardPile of the card the player
+// has clicked to take. null = nothing selected yet.
+// Taking card at index i means taking cards [i .. top] (i..length-1).
+
+function renderPiles(){
+  // ── Stock ──────────────────────────────────────────────────────
+  const stockEl=document.getElementById('stock-pile');
+  document.getElementById('stock-count').textContent=G.stock.length+' left';
+  const canDrawStock=G.phase==='draw'&&G.stock.length>0;
+  stockEl.style.opacity=canDrawStock?'1':'.4';
+  stockEl.style.cursor=canDrawStock?'pointer':'not-allowed';
+
+  // ── Discard fan ────────────────────────────────────────────────
+  renderDiscardFan();
+}
+
+function renderDiscardFan(){
+  const fanEl=document.getElementById('discard-fan');
+  const countEl=document.getElementById('discard-count-label');
+  const hintEl=document.getElementById('discard-fan-hint');
+  if(!fanEl) return;
+
+  if(G.discardPile.length===0){
+    fanEl.innerHTML='<div class="fan-card fan-empty" style="width:48px;height:68px"><span style="font-size:.6rem;color:var(--text-faint)">EMPTY</span></div>';
+    countEl.textContent='';
+    hintEl.textContent=G.phase==='draw'?'Draw from the stock to start.':'';
+    return;
+  }
+
+  const den=getCurrentDen();
+  // Determine which pile indices are "reachable" (would immediately complete a meld)
+  // and which are the "confirmed selection" for multi-card take.
+  // G.discardPile[0] = bottom, G.discardPile[length-1] = top.
+  // Top card is always takeable. Deeper cards are reachable only if taking
+  // that card (plus everything above it) immediately completes a meld.
+
+  const reachable=new Set(); // pile indices the player can legally pick
+  const topIdx=G.discardPile.length-1;
+  reachable.add(topIdx); // top always reachable
+
+  if(G.phase==='draw'){
+    // For each card deeper in the pile, check if taking [i..top] would give
+    // the player an immediately meld-completable hand (after optimal discard).
+    const handWithoutDraw=G.playerHand.slice();
+    for(let i=topIdx-1;i>=0;i--){
+      // Taking cards [i..topIdx] = discardPile.slice(i) (all from i upward)
+      const taken=G.discardPile.slice(i); // [i] is the target card, rest are extras
+      const trialHand=[...handWithoutDraw,...taken];
+      // Check if ANY arrangement of this hand (after discarding one) contains a new meld
+      // that includes the target card specifically
+      const targetCard=G.discardPile[i];
+      let createsImmediateMeld=false;
+      // Try every possible discard from trialHand
+      for(let di=0;di<trialHand.length;di++){
+        if(trialHand[di].id===targetCard.id) continue; // can't discard the target
+        const afterDiscard=trialHand.filter((_,j)=>j!==di);
+        const res=solveMelds(afterDiscard,den.rankBuffs,true);
+        // Does targetCard appear in any meld?
+        const targetInMeld=res.melds.some(m=>m.cards.some(c=>c.id===targetCard.id));
+        if(targetInMeld){createsImmediateMeld=true;break;}
+      }
+      if(createsImmediateMeld) reachable.add(i);
+      else break; // can't reach further if this one doesn't help (must take all above)
+    }
+  }
+
+  // Build fan HTML — pile[0] is leftmost (oldest), pile[top] is rightmost (newest/top)
+  // Show at most 12 cards; if pile is longer, show "..." placeholder then the reachable portion
+  const MAX_SHOW=12;
+  const pile=G.discardPile;
+  let html='';
+  let startIdx=0;
+  if(pile.length>MAX_SHOW){
+    // always show oldest reachable + top MAX_SHOW
+    startIdx=Math.max(0,pile.length-MAX_SHOW);
+    // ensure all reachable indices are visible
+    const minReachable=Math.min(...reachable);
+    startIdx=Math.min(startIdx,minReachable);
+    if(startIdx>0){
+      html+=`<div style="display:flex;align-items:center;color:var(--text-faint);font-size:.65rem;font-weight:700;margin-right:4px;align-self:center">+${startIdx}</div>`;
+    }
+  }
+
+  for(let i=startIdx;i<pile.length;i++){
+    const card=pile[i];
+    const isTop=i===topIdx;
+    const isReach=reachable.has(i)&&!isTop;
+    const isLocked=!reachable.has(i)&&G.phase==='draw';
+    const isSel=G.fanSelectedIdx!==null&&i===G.fanSelectedIdx;
+    const willTake=G.fanSelectedIdx!==null&&i>G.fanSelectedIdx&&i<=topIdx;
+
+    let cls='fan-card';
+    if(isTop) cls+=' fan-top';
+    if(isReach) cls+=' fan-reachable';
+    if(isLocked) cls+=' fan-locked';
+    if(isSel) cls+=' fan-selected-reach';
+    if(willTake) cls+=' fan-will-take';
+
+    // habitat background for animal cards
+    const habBgs={forest:'var(--hab-forest)',plains:'var(--hab-plains)',tundra:'var(--hab-tundra)',swamp:'var(--hab-swamp)'};
+    const bgStyle=card.kind==='animal'?`background:${habBgs[card.hab]};`:'background:#1a0828;';
+
+    // rank color
+    const rankColors={forest:'#7ed957',plains:'#f3bb4a',tundra:'#5cc8ff',swamp:'#7ee8c0'};
+    const rankColor=card.kind==='animal'?(rankColors[card.hab]||'var(--text)'):'#c899e8';
+
+    // badge
+    let badge='';
+    if(isSel) badge=`<div class="fan-badge">TAKE ${pile.length-i} card${pile.length-i>1?'s':''}</div>`;
+    else if(isTop&&G.phase==='draw') badge=`<div class="fan-badge">TOP</div>`;
+    else if(isReach) badge=`<div class="fan-badge">✦ REACH</div>`;
+    else if(isLocked&&G.phase==='draw') badge=`<div class="fan-badge badge-locked">LOCKED</div>`;
+
+    // content
+    let inner='';
+    if(card.kind==='animal'){
+      inner=`<span class="fan-rank" style="color:${rankColor}">${card.value}</span><span class="fan-name">${card.name}</span><span class="fan-hab">${card.habEmoji}</span>`;
+    } else {
+      inner=`<span style="font-size:1.3rem">${card.emoji}</span><span class="fan-name" style="color:#c899e8">${card.name}</span>`;
+    }
+
+    const clickable=(isTop||isReach||isSel)&&G.phase==='draw';
+    const onclick=clickable?`onclick="fanCardClick(${i})"`:'';
+    html+=`<div class="${cls}" style="${bgStyle}border-color:${isLocked?'var(--border-soft)':''}" ${onclick} title="${card.kind==='animal'?card.value+' '+card.name+' '+card.habEmoji:card.name}">${badge}${inner}</div>`;
+  }
+
+  fanEl.innerHTML=html;
+
+  // Count label
+  countEl.textContent=pile.length>0?`(${pile.length} card${pile.length>1?'s':''})`:'' ;
+
+  // Hint
+  if(G.phase!=='draw'){
+    hintEl.textContent='';
+  } else if(G.fanSelectedIdx!==null){
+    const n=pile.length-G.fanSelectedIdx;
+    const target=pile[G.fanSelectedIdx];
+    hintEl.innerHTML=`Taking <b style="color:var(--pink)">${n} card${n>1?'s':''}</b> — confirm or pick differently`;
+  } else if(reachable.size>1){
+    hintEl.innerHTML=`<span style="color:var(--gold)">✦ ${reachable.size-1} deeper card${reachable.size>2?'s':''} reachable</span> — click to preview, then confirm`;
+  } else {
+    hintEl.textContent='Click the top card to take it, or draw from stock.';
+  }
+
+  // Confirm/cancel buttons when something is selected
+  const existing=document.getElementById('fan-confirm-row');
+  if(G.fanSelectedIdx!==null){
+    if(!existing){
+      const row=document.createElement('div');
+      row.id='fan-confirm-row';
+      row.style.cssText='display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap';
+      const n=pile.length-G.fanSelectedIdx;
+      const target=pile[G.fanSelectedIdx];
+      const name=target.kind==='animal'?target.value+' '+target.name:target.name;
+      row.innerHTML=`<button class="fan-confirm" onclick="fanConfirmTake()">Take ${n} card${n>1?'s':''} (${name}+${n-1} above)</button><button class="fan-confirm fan-confirm-cancel" onclick="fanCancelTake()">Cancel</button>`;
+      fanEl.after(row);
+    } else {
+      const n=pile.length-G.fanSelectedIdx;
+      const target=pile[G.fanSelectedIdx];
+      const name=target.kind==='animal'?target.value+' '+target.name:target.name;
+      existing.innerHTML=`<button class="fan-confirm" onclick="fanConfirmTake()">Take ${n} card${n>1?'s':''} (${name}+${n-1} above)</button><button class="fan-confirm fan-confirm-cancel" onclick="fanCancelTake()">Cancel</button>`;
+    }
+  } else {
+    if(existing&&existing.remove) existing.remove();
+  }
+}
+
+function fanCardClick(pileIdx){
+  if(G.phase!=='draw') return;
+  const topIdx=G.discardPile.length-1;
+  if(pileIdx===topIdx){
+    // Top card: take immediately (single card, no confirmation needed)
+    G.fanSelectedIdx=null;
+    doTakeDiscardAt(pileIdx);
+    return;
+  }
+  // Deeper card: toggle selection
+  if(G.fanSelectedIdx===pileIdx){
+    G.fanSelectedIdx=null;
+  } else {
+    G.fanSelectedIdx=pileIdx;
+  }
+  renderDiscardFan();
+}
+
+function fanConfirmTake(){
+  if(G.fanSelectedIdx===null) return;
+  doTakeDiscardAt(G.fanSelectedIdx);
+}
+
+function fanCancelTake(){
+  G.fanSelectedIdx=null;
+  renderDiscardFan();
+}
+
+function renderDiscardCardHTML(card){
+  if(card.kind==='animal'){
+    const habCls=`hab-${card.hab}`;
+    return `<div class="dcard" style="width:100%;height:100%;border-radius:7px;" class="${habCls}"><span class="rank" style="font-size:1.2rem;font-weight:800;color:var(--${card.hab==='forest'?'green':card.hab==='plains'?'gold':card.hab==='tundra'?'blue':'text'})">${card.value}</span><span class="name" style="font-size:.5rem;color:var(--text-dim);letter-spacing:.5px;text-transform:uppercase">${card.name}</span><span style="font-size:.9rem;margin-top:2px">${card.habEmoji}</span></div>`;
+  }
+  if(card.kind==='wild'){
+    return `<div class="dcard" style="width:100%;height:100%;border-radius:7px;background:#1a0828"><span style="font-size:1.4rem">${card.emoji}</span><span style="font-size:.45rem;color:#c899e8;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">${card.name}</span></div>`;
+  }
+  return `<div class="dcard" style="width:100%;height:100%;border-radius:7px;background:#1a0815"><span style="font-size:1.4rem">${card.emoji}</span><span style="font-size:.45rem;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-top:2px">${card.name}</span></div>`;
+}
+
+
+// ── CARD TOOLTIP HTML ────────────────────────────────────────────────────────
+function cardTooltipHTML(card, dw, inMeld, rankBuffs){
+  const den = getCurrentDen();
+  let name, emoji, desc='', tipLines=[];
+
+  if(card.kind==='animal'){
+    const r = RANK_BY_VAL[card.value]||{};
+    const h = HABS.find(h=>h.id===card.hab)||{};
+    name = `${r.name||card.name}`;
+    emoji = `${r.emoji||''} ${h.emoji||''}`;
+    const buffed = rankBuffs&&rankBuffs[card.value];
+    tipLines.push(['Meld rank', card.value+' ('+RANK_BY_VAL[card.value]?.name+')']);
+    tipLines.push(['Habitat', `${h.emoji||''} ${h.name||card.hab}`]);
+    if(buffed){
+      tipLines.push(['⚡ DW penalty', `+${buffed} (${card.value} → ${card.value+buffed} pts)`]);
+      desc=`Melds as rank ${card.value}. Deadwood costs ${card.value+buffed} due to Den modifier.`;
+    }
+  } else if(card.kind==='wild'){
+    const p = WILD_PIGS[card.wildId]||{};
+    name = p.name||card.name;
+    emoji = p.emoji||card.emoji;
+    desc = p.desc||'';
+    if(p.rerollEachTurn){
+      const roll = G.hogWildRolls[card.id];
+      tipLines.push(['Current roll', roll ? `${roll} (${RANK_BY_VAL[roll]?.name||'?'})` : 'Not rolled yet']);
+    }
+    tipLines.push(['Type', 'Wild Pig']);
+  } else {
+    const f = FERAL_CARDS[card.feralId]||{};
+    name = f.name||card.name;
+    emoji = f.emoji||card.emoji;
+    desc = "A feral opponent card shuffled into this Den's deck.";
+    tipLines.push(['Type', '<span style="color:var(--red)">Feral</span>']);
+  }
+
+  const dwClass = dw===0 ? 'tip-ok' : dw>=10 ? 'tip-bad' : dw>=7 ? 'tip-warn' : 'tip-ok';
+  const meldStr = inMeld
+    ? '<span class="card-tip-meld">✓ In a meld (0 DW)</span>'
+    : `<span class="card-tip-dw ${dwClass}">${dw} deadwood</span>`;
+
+  const rowsHTML = tipLines.map(([l,v])=>
+    `<div class="card-tip-row"><span class="card-tip-label">${l}</span><span class="card-tip-val">${v}</span></div>`
+  ).join('');
+
+  return `<div class="card-tip">
+    <div class="card-tip-name">${emoji} ${name}</div>
+    ${rowsHTML}
+    <div class="card-tip-row"><span class="card-tip-label">Deadwood</span><span>${meldStr}</span></div>
+    ${desc ? `<div class="card-tip-desc">${desc}</div>` : ''}
+  </div>`;
+}
+
+// ── MELD VALIDATION ──────────────────────────────────────────────────────────
+// Returns {valid:bool, type:'pack'|'trail', hab?} for a proposed set of cards.
+// Does NOT touch G.committedMelds.
+function validateProposedMeld(cards){
+  if(cards.length<2) return {valid:false,reason:'Need at least 2 cards'};
+  const den=getCurrentDen();
+
+  // Check for true-wild cards (mud_pig, boss_hog)
+  const wilds=cards.filter(c=>c.kind==='wild'&&WILD_PIGS[c.wildId]&&WILD_PIGS[c.wildId].trueWild);
+  const nonWilds=cards.filter(c=>!(c.kind==='wild'&&WILD_PIGS[c.wildId]&&WILD_PIGS[c.wildId].trueWild));
+
+  // ── Try PACK: all non-wilds share the same effective value ──────────────
+  if(nonWilds.length>0){
+    // PACKS match by BASE rank only — a buff doesn't change the species.
+    // (3 buffed Wolves are still Wolves, not Bears. DW cost is higher though.)
+    const vals=nonWilds.map(c=>{
+      if(c.kind==='animal') return c.value; // base rank — buff is DW penalty, not rank change
+      if(c.kind==='wild'&&WILD_PIGS[c.wildId]&&WILD_PIGS[c.wildId].rerollEachTurn) return G.hogWildRolls[c.id]||7;
+      return null;
+    }).filter(v=>v!==null);
+    const allSameVal=vals.length>0&&vals.every(v=>v===vals[0]);
+    if(allSameVal){
+      // min pack size
+      const name=nonWilds[0].kind==='animal'?nonWilds[0].name:'';
+      let minSize=3;
+      if(G.charms.includes('pack_tactics')&&CHARMS['pack_tactics'].animals.includes(name)) minSize=2;
+      if(cards.length>=minSize) return {valid:true,type:'pack'};
+      return {valid:false,reason:`Packs need ${minSize}+ cards of the same rank`};
+    }
+  }
+
+  // ── Try TRAIL: all non-wilds same habitat, consecutive ranks ────────────
+  const animalNonWilds=nonWilds.filter(c=>c.kind==='animal');
+  if(animalNonWilds.length>=1){
+    const habs=new Set(animalNonWilds.map(c=>c.hab));
+    if(habs.size===1){
+      const hab=[...habs][0];
+      // Sort by BUFFED value — buff shifts a card's position in a run.
+      // e.g. Wolf(7)+buff(2) = 9, so it sequences after Bear(9).
+      const sorted=[...animalNonWilds].sort((a,b)=>(a.value+(den.rankBuffs&&den.rankBuffs[a.value]||0))-(b.value+(den.rankBuffs&&den.rankBuffs[b.value]||0)));
+      const vals=sorted.map(c=>c.value+(den.rankBuffs&&den.rankBuffs[c.value]||0));
+      let wildBudget=wilds.length;
+      let gapsFilled=0;
+      let valid=true;
+      for(let i=1;i<vals.length;i++){
+        const gap=vals[i]-vals[i-1];
+        if(gap===1) continue;
+        if(gap===2&&wildBudget>0){wildBudget--;gapsFilled++;continue;}
+        valid=false;break;
+      }
+      if(valid&&cards.length>=3) return {valid:true,type:'trail',hab};
+      if(valid&&cards.length===2&&wilds.length===0) return {valid:false,reason:'Trails need 3+ consecutive cards'};
+      if(!valid) return {valid:false,reason:'Trail cards must be consecutive in the same habitat'};
+    }
+  }
+
+  // ── All wilds (special case: can't form meld from wilds alone unless pack) ──
+  if(nonWilds.length===0) return {valid:false,reason:'Need at least one animal card'};
+
+  return {valid:false,reason:'Cards must form a Pack (same rank) or Trail (consecutive, same habitat)'};
+}
+
+// Deadwood from committed melds perspective: cards NOT in any committed meld
+function getCommittedMeldIds(){
+  const ids=new Set();
+  // Always store as strings for consistent comparison with String(card.id)
+  G.committedMelds.forEach(m=>m.cardIds.forEach(id=>ids.add(String(id))));
+  return ids;
+}
+
+function getDeadwoodCards(){
+  const committed=getCommittedMeldIds();
+  return G.playerHand.filter(c=>!committed.has(String(c.id)));
+}
+
+function getDeadwoodTotal(){
+  const den=getCurrentDen();
+  return getDeadwoodCards().reduce((s,c)=>s+cardDeadwoodCost(c,den.rankBuffs),0);
+}
+
+// ── CARD HTML BUILDER (shared by meld zone and deadwood zone) ────────────────
+function buildCardHTML(card, extraCls, onclickStr){
+  const den=getCurrentDen();
+  const committedIds=getCommittedMeldIds();
+  const inMeld=committedIds.has(card.id);
+  const dw=cardDeadwoodCost(card,den.rankBuffs);
+  const isSelected=G.selectedCardIds.has(String(card.id));
+  const hiDW=!inMeld&&!isSelected&&dw>=11;
+
+  let cls='card';
+  if(card.kind==='animal') cls+=` hab-${card.hab}`;
+  if(card.kind==='wild'||card.kind==='feral') cls+=' pig-card';
+  if(isSelected) cls+=' multi-sel';
+  else if(hiDW) cls+=' high-dw';
+  if(extraCls) cls+=' '+extraCls;
+
+  let inner='';
+  if(card.kind==='animal'){
+    const buffed=den.rankBuffs&&den.rankBuffs[card.value];
+    const buffLine=buffed?`<span class="card-buff">⚡+${buffed} DW</span>`:'';
+    inner=`<div class="card-body"><span class="card-rank">${card.value}</span><span class="card-hab">${card.habEmoji}</span><span class="card-name">${card.name}</span>${buffLine}</div>`;
+  } else if(card.kind==='wild'){
+    const p=WILD_PIGS[card.wildId];
+    const rv=p.rerollEachTurn?G.hogWildRolls[card.id]||'?':'';
+    inner=`<div class="card-body"><span class="card-pig-icon">${card.emoji}</span><span class="card-pig-label">${p.rerollEachTurn?`↺${rv}`:card.name}</span></div>`;
+  } else {
+    inner=`<div class="card-body"><span class="card-pig-icon">${card.emoji}</span><span class="card-pig-label" style="color:var(--red)">${card.name}</span></div>`;
+  }
+  inner+=`<span class="card-dw-tag">${dw}</span>`;
+  inner+=cardTooltipHTML(card,dw,inMeld,den.rankBuffs);
+  return `<div class="${cls}" onclick="${onclickStr}">${inner}</div>`;
+}
+
+function setDifficulty(d){
+  G.difficulty=d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('diff-'+d);
+  if(btn) btn.classList.add('active');
+  // Update score targets based on difficulty
+  // Easy: ×0.7 targets, Hard: ×1.35 targets
+  const mult={easy:0.7,medium:1.0,hard:1.35}[d]||1.0;
+  const base=[150,220,320,450,600,800,1100,1800];
+  DENS.forEach((den,i)=>{den.scoreTarget=Math.round(base[i]*mult);});
+  renderDenMap();
+}
+
+function toggleSort(mode){
+  G.handSort = G.handSort===mode ? 'dealt' : mode;
+  // Update button states
+  const btnR=document.getElementById('sort-rank-btn');
+  const btnH=document.getElementById('sort-hab-btn');
+  if(btnR) btnR.style.background = G.handSort==='rank'?'var(--blue)':'';
+  if(btnR) btnR.style.color = G.handSort==='rank'?'#001a2a':'';
+  if(btnH) btnH.style.background = G.handSort==='habitat'?'var(--green)':'';
+  if(btnH) btnH.style.color = G.handSort==='habitat'?'#001a0a':'';
+  renderPlayerHand();
+}
+
+function getSortedDeadwood(cards){
+  const dead=[...cards];
+  if(G.handSort==='rank'){
+    dead.sort((a,b)=>{
+      const av=a.kind==='animal'?a.value:(a.kind==='wild'?100:99);
+      const bv=b.kind==='animal'?b.value:(b.kind==='wild'?100:99);
+      return av-bv;
+    });
+  } else if(G.handSort==='habitat'){
+    const habOrder={forest:0,plains:1,tundra:2,swamp:3};
+    dead.sort((a,b)=>{
+      const ah=a.kind==='animal'?(habOrder[a.hab]??4):5;
+      const bh=b.kind==='animal'?(habOrder[b.hab]??4):5;
+      if(ah!==bh) return ah-bh;
+      return (a.kind==='animal'?a.value:99)-(b.kind==='animal'?b.value:99);
+    });
+  }
+  return dead;
+}
+
+function renderPlayerHand(){
+  const den=getCurrentDen();
+  const committedIds=getCommittedMeldIds();
+
+  // ── MELD ZONE (committed melds, physically raised) ───────────────────────
+  const meldWrap=document.getElementById('meld-zone-wrap');
+  const meldRow=document.getElementById('meld-zone-row');
+  if(G.committedMelds.length>0){
+    meldWrap.classList.add('has-melds');
+    meldRow.innerHTML=G.committedMelds.map((meld,mi)=>{
+      const habObj=meld.hab?HABS.find(h=>h.id===meld.hab):null;
+      const lbl=meld.type==='pack'
+        ? `PACK — ${meld.cardIds.length} of a kind`
+        : `TRAIL ${habObj?habObj.emoji:''} ${habObj?habObj.name:''}`;
+      const cards=meld.cardIds.map(id=>{
+        const c=G.playerHand.find(c=>String(c.id)===String(id));
+        if(!c) return '';
+        if(c.kind==='animal') return `<div class="meld-card-mini hab-${c.hab}" title="${c.name} ${c.habEmoji}">${c.value}</div>`;
+        return `<div class="meld-card-mini pig-mini" title="${c.name}">${c.emoji}</div>`;
+      }).join('');
+      return `<div class="meld-group-box">
+        <button class="btn-unmeld" onclick="unsetMeld(${mi})" title="Undo this meld">✕</button>
+        <div class="meld-group-box-label">${lbl}</div>
+        <div class="meld-group-box-cards">${cards}</div>
+      </div>`;
+    }).join('');
+  } else {
+    meldWrap.classList.remove('has-melds');
+    meldRow.innerHTML='';
+  }
+
+  // ── DEADWOOD ROW (unmelded cards only) ───────────────────────────────────
+  const deadwoodLabel=document.getElementById('deadwood-zone-label');
+  const dwCards=getDeadwoodCards();
+  if(G.committedMelds.length>0&&deadwoodLabel){
+    deadwoodLabel.style.display='block';
+  } else if(deadwoodLabel){
+    deadwoodLabel.style.display='none';
+  }
+
+  const sortedDwCards=getSortedDeadwood(dwCards);
+  const row=document.getElementById('player-hand-row');
+  row.innerHTML=sortedDwCards.map((card,i)=>{
+    const isSelected=G.selectedCardIds.has(String(card.id));
+    const dw=cardDeadwoodCost(card,den.rankBuffs);
+    const hiDW=!isSelected&&dw>=11;
+    let cls='card';
+    if(card.kind==='animal') cls+=` hab-${card.hab}`;
+    if(card.kind==='wild'||card.kind==='feral') cls+=' pig-card';
+    if(isSelected) cls+=' multi-sel';
+    else if(hiDW) cls+=' high-dw';
+    let inner='';
+    if(card.kind==='animal'){
+      const buffed=den.rankBuffs&&den.rankBuffs[card.value];
+      const buffLine=buffed?`<span class="card-buff">⚡+${buffed} DW</span>`:'';
+      inner=`<div class="card-body"><span class="card-rank">${card.value}</span><span class="card-hab">${card.habEmoji}</span><span class="card-name">${card.name}</span>${buffLine}</div>`;
+    } else if(card.kind==='wild'){
+      const p=WILD_PIGS[card.wildId];
+      const rv=p.rerollEachTurn?G.hogWildRolls[card.id]||'?':'';
+      inner=`<div class="card-body"><span class="card-pig-icon">${card.emoji}</span><span class="card-pig-label">${p.rerollEachTurn?`↺${rv}`:card.name}</span></div>`;
+    } else {
+      inner=`<div class="card-body"><span class="card-pig-icon">${card.emoji}</span><span class="card-pig-label" style="color:var(--red)">${card.name}</span></div>`;
+    }
+    inner+=`<span class="card-dw-tag">${dw}</span>`;
+    inner+=cardTooltipHTML(card,dw,false,den.rankBuffs);
+    return `<div class="${cls}" onclick="selectCard('${card.id}')">${inner}</div>`;
+  }).join('');
+
+  // ── BOTTOM BAR ────────────────────────────────────────────────────────────
+  const totalDW=getDeadwoodTotal();
+  const dwEl=document.getElementById('dw-display');
+  dwEl.textContent=totalDW;
+  dwEl.className='dw-val'+(totalDW===0?' dw-ok':totalDW>=20?' dw-high':'');
+
+  const meldSummary=document.getElementById('meld-summary');
+  if(G.committedMelds.length>0){
+    const packs=G.committedMelds.filter(m=>m.type==='pack').length;
+    const trails=G.committedMelds.filter(m=>m.type==='trail').length;
+    let parts=[];
+    if(packs>0) parts.push(`<span class="meld-count">${packs} Pack${packs>1?'s':''}</span>`);
+    if(trails>0) parts.push(`<span class="meld-count">${trails} Trail${trails>1?'s':''}</span>`);
+    meldSummary.innerHTML=parts.join(' + ')+` (${dwCards.length} deadwood)`;
+  } else {
+    meldSummary.innerHTML='<span style="color:var(--text-faint)">No melds set</span>';
+  }
+
+  // hide the old meld-groups-area (now replaced by meld-zone-wrap)
+  const mgArea=document.getElementById('meld-groups-area');
+  if(mgArea) mgArea.style.display='none';
+
+  renderBottomBar();
+}
+
+function renderBottomBar(){
+  const den=getCurrentDen();
+  const btnDiscard=document.getElementById('btn-discard');
+  const btnSlam=document.getElementById('btn-slam');
+  const btnSetMeld=document.getElementById('btn-set-meld');
+  const btnClearSel=document.getElementById('btn-clear-sel');
+
+  const selCount=G.selectedCardIds.size;
+  const inDiscard=G.phase==='discard';
+
+  // Set Meld button: enabled when 2+ cards selected and they form a valid meld
+  if(btnSetMeld){
+    if(inDiscard&&selCount>=2){
+      const selCards=[...G.selectedCardIds].map(id=>G.playerHand.find(c=>String(c.id)===String(id))).filter(Boolean);
+      const v=validateProposedMeld(selCards);
+      btnSetMeld.disabled=!v.valid;
+      btnSetMeld.title=v.valid?`Set a ${v.type}`:v.reason||'Invalid meld';
+      btnSetMeld.textContent=v.valid?`＋ Set ${v.type==='pack'?'Pack':'Trail'}`:'＋ Set Meld';
+    } else {
+      btnSetMeld.disabled=true;
+      btnSetMeld.textContent='＋ Set Meld';
+    }
+  }
+
+  // Clear selection button: show if anything selected
+  if(btnClearSel) btnClearSel.style.display=selCount>0?'inline-flex':'none';
+
+  // Discard: need exactly 1 card selected in deadwood zone
+  if(btnDiscard){
+    if(inDiscard&&selCount===1){
+      const id=[...G.selectedCardIds][0];
+      const committedIds=getCommittedMeldIds();
+      btnDiscard.disabled=committedIds.has(String(id)); // can't discard a committed card
+    } else {
+      btnDiscard.disabled=true;
+    }
+  }
+
+  // Slam Down: always available when 1 non-melded card selected (score determines win)
+  if(btnSlam){
+    let canSlam=false;
+    if(inDiscard&&selCount===1){
+      const id=[...G.selectedCardIds][0];
+      const committedIds=getCommittedMeldIds();
+      canSlam=!committedIds.has(String(id)); // can slam any time with a deadwood card selected
+    }
+    btnSlam.disabled=!canSlam;
+  }
+
+  const hintEl=document.getElementById('player-phase-hint');
+  if(hintEl){
+    if(G.phase==='draw') hintEl.textContent='← Draw or take the discard';
+    else if(G.phase==='discard'){
+      if(selCount===0) hintEl.textContent='Select cards to set melds, then discard one';
+      else if(selCount===1) hintEl.textContent='Discard selected — or add more cards to meld';
+      else hintEl.textContent=`${selCount} selected — Set Meld or clear`;
+    } else if(G.phase==='opp') hintEl.textContent="Opponent's turn…";
+    else hintEl.textContent='';
+  }
+
+  // Live score ticker
+  renderScoreTicker();
+}
+
+function renderPhaseHint(){
+  // already in renderBottomBar
+}
+
+function renderAbilityBar(){
+  const bar=document.getElementById('ability-bar');
+  const btns=[];
+  // show pig
+  const hasShowPig=G.playerHand.some(c=>c.kind==='wild'&&c.wildId==='show_pig');
+  if(hasShowPig){
+    btns.push(`<button class="active-ability-btn${G.showPigUsed?' used':''}" onclick="useShowPig()" ${G.showPigUsed?'disabled':''} title="Reveal opponent's highest deadwood card">🎀 Show Pig${G.showPigUsed?' (used)':''}</button>`);
+  }
+  // greased piglet (off-turn)
+  const hasGP=G.playerHand.some(c=>c.kind==='wild'&&c.wildId==='greased_piglet');
+  if(hasGP&&G.discardPile.length>0){
+    btns.push(`<button class="active-ability-btn${G.greasedPigletUsed?' used':''}" onclick="useGreasedPiglet()" ${G.greasedPigletUsed?'disabled':''} title="Swap Greased Piglet with top of discard, off-turn">🐽 Swap${G.greasedPigletUsed?' (used)':''}</button>`);
+  }
+  // active charms
+  if(G.charms.includes('second_wind')){
+    btns.push(`<button class="active-ability-btn${G.secondWindUsed?' used':''}" onclick="useSecondWind()" ${G.secondWindUsed?'disabled':''} title="Shuffle your hand back into the stock and redeal">💨 Second Wind${G.secondWindUsed?' (used)':''}</button>`);
+  }
+  if(G.charms.includes('mirror_pond')){
+    btns.push(`<button class="active-ability-btn${G.mirrorPondUsed?' used':''}" onclick="useMirrorPond()" ${G.mirrorPondUsed?'disabled':''} title="Pull any rank from the stock directly into your hand">🪞 Mirror Pond${G.mirrorPondUsed?' (used)':''}</button>`);
+  }
+  if(G.charms.includes('stone_skin')&&G.phase==='discard'&&!G.stoneSkinUsed){
+    btns.push(`<button class="active-ability-btn" onclick="useStoneSkin()" title="Mark one card as 0 deadwood for this slam check">🪨 Stone Skin</button>`);
+  }
+  if(G.charms.includes('stampede')&&!G.stampedeTurnActive){
+    btns.push(`<button class="active-ability-btn" onclick="useStampede()" title="This hand Bison and Bear score triple chips">🦬 Stampede</button>`);
+  }
+  if(G.charms.includes('alphas_mark')&&!G.alphasMarkActive&&G.selectedCardIds.size===1){
+    btns.push(`<button class="active-ability-btn" onclick="useAlphasMark()" title="Chosen card counts as any rank in next meld">⭐ Alpha's Mark</button>`);
+  }
+  bar.innerHTML=btns.join('');
+}
+
+// ================================================================
+// PLAYER ACTIONS
+// ================================================================
+function selectCard(cardId){
+  // cardId is now a card's .id string (not an index)
+  if(G.stoneSkinActive){
+    // stone skin mode: find card by id and pass index to handler
+    const idx=G.playerHand.findIndex(c=>String(c.id)===String(cardId));
+    stoneSkinSelectCard(idx);
+    return;
+  }
+  if(G.phase!=='discard') return;
+  const idStr=String(cardId);
+  if(G.selectedCardIds.has(idStr)) G.selectedCardIds.delete(idStr);
+  else G.selectedCardIds.add(idStr);
+  // keep legacy selectedCardIdx pointing to first selected card (some code may use it)
+  if(G.selectedCardIds.size===1) G.selectedCardIdx=G.playerHand.findIndex(c=>String(c.id)===[...G.selectedCardIds][0]);
+  else G.selectedCardIdx=null;
+  renderPlayerHand();
+  renderAbilityBar();
+}
+
+function clearSelection(){
+  G.selectedCardIds.clear();
+  G.selectedCardIdx=null;
+  renderPlayerHand();
+  renderAbilityBar();
+}
+
+function doSetMeld(){
+  // Validate and commit the currently selected cards as a meld
+  if(G.phase!=='discard'||G.selectedCardIds.size<2) return;
+  const selCards=[...G.selectedCardIds].map(id=>G.playerHand.find(c=>String(c.id)===String(id))).filter(Boolean);
+  const v=validateProposedMeld(selCards);
+  if(!v.valid){
+    setLog(`<span style="color:var(--red)">Invalid meld: ${v.reason}</span>`);
+    return;
+  }
+  // Commit it
+  // Store cardIds as strings for consistent comparison
+  G.committedMelds.push({type:v.type,cardIds:[...G.selectedCardIds],hab:v.hab||null});
+  G.selectedCardIds.clear();
+  G.selectedCardIdx=null;
+  const typeLbl=v.type==='pack'?'Pack':'Trail';
+  const {score} = computeHandScore(G.committedMelds, G.playerHand, false);
+  const den = getCurrentDen();
+  const hitSoFar = score >= den.scoreTarget;
+  setLog(`<span style="color:var(--green)">✓ ${typeLbl} set!</span> Running score: <b style="color:${hitSoFar?'var(--green)':'var(--gold)'}">${score.toLocaleString()}</b> / ${den.scoreTarget.toLocaleString()} target.`);
+  renderPlayerHand();
+  renderAbilityBar();
+}
+
+function unsetMeld(meldIndex){
+  // Return a committed meld's cards back to the deadwood row
+  if(meldIndex<0||meldIndex>=G.committedMelds.length) return;
+  G.committedMelds.splice(meldIndex,1);
+  G.selectedCardIds.clear();
+  G.selectedCardIdx=null;
+  setLog('Meld undone — cards returned to your hand.');
+  renderPlayerHand();
+  renderAbilityBar();
+}
+
+function doDrawStock(){
+  if(G.phase!=='draw') return;
+  if(G.stock.length===0){setLog('The stock is empty! The hand is a push.');endHandPush();return;}
+  const card=G.stock.pop();
+  G.playerHand.push(card);
+  rollHogWilds(G.playerHand);
+  G.phase='discard';
+  G.selectedCardIdx=null;
+  G.selectedCardIds.clear();
+  setLog(`You drew <b>${card.kind==='animal'?card.name:card.name}</b> from the stock.`);
+  renderHandScreen();
+
+  _animateNewCard(card.id);
+}
+
+function doTakeDiscard(){
+  // Legacy: take the top card. Used by AI and Greased Piglet.
+  doTakeDiscardAt(G.discardPile.length-1);
+}
+
+function doTakeDiscardAt(pileIdx){
+  if(G.phase!=='draw'||G.discardPile.length===0) return;
+  if(pileIdx<0||pileIdx>=G.discardPile.length) return;
+  G.fanSelectedIdx=null;
+  // Take the target card plus everything above it (from pileIdx to top)
+  const taken=G.discardPile.splice(pileIdx); // removes [pileIdx..end], returns them
+  // taken[0] is the target card the player wanted; rest are bonus cards
+  taken.forEach(c=>G.playerHand.push(c));
+  rollHogWilds(G.playerHand);
+  G.phase='discard';
+  G.selectedCardIdx=null;
+  G.selectedCardIds.clear();
+  const target=taken[0];
+  const targetName=target.kind==='animal'?`${target.value} ${target.name} ${target.habEmoji}`:target.name;
+  if(taken.length===1){
+    setLog(`You took <b>${targetName}</b> from the discard.`);
+  } else {
+    setLog(`You reached deep and took <b>${targetName}</b> plus <b>${taken.length-1}</b> card${taken.length>2?'s':''} above it!`);
+  }
+  renderHandScreen();
+  // Animate newly-added cards briefly
+  setTimeout(()=>{
+    const handEl=document.getElementById('player-hand-row');
+    if(!handEl) return;
+    const cards=[...handEl.querySelectorAll('.card')];
+    // Animate last N cards (the ones just added)
+    cards.slice(-taken.length).forEach((el,i)=>{
+      setTimeout(()=>{el.classList.add('card-deal-anim');setTimeout(()=>el.classList.remove('card-deal-anim'),280);},i*40);
+    });
+  },10);
+}
+
+function doDiscard(){
+  if(G.phase!=='discard'||G.selectedCardIds.size!==1) return;
+  const id=[...G.selectedCardIds][0];
+  const committedIds=getCommittedMeldIds();
+  if(committedIds.has(id)) return; // can't discard a committed card
+  const idx=G.playerHand.findIndex(c=>String(c.id)===String(id));
+  if(idx<0) return;
+  G.selectedCardIdx=idx; // legacy: animateDiscard uses index
+  animateDiscard(idx, ()=>_doDiscardCommit());
+}
+
+
+// ── DISCARD ANIMATION ────────────────────────────────────────────────────────
+
+function _animateNewCard(cardId){
+  // Give the newly-drawn card a brief entrance animation
+  setTimeout(()=>{
+    const handEl=document.getElementById('player-hand-row');
+    if(!handEl) return;
+    const cards=handEl.querySelectorAll('.card');
+    // The new card is always last in the hand (before optimal discard reorder)
+    const last=cards[cards.length-1];
+    if(last){
+      last.classList.add('card-deal-anim');
+      setTimeout(()=>last.classList.remove('card-deal-anim'),280);
+    }
+  },10);
+}
+
+function animateDiscard(cardIdx, callback){
+  // Find the card element in the player hand
+  const handEl = document.getElementById('player-hand-row');
+  const fanEl  = document.getElementById('discard-fan');
+  if(!handEl || !fanEl){callback();return;}
+
+  const cardEls = handEl.querySelectorAll('.card');
+  const srcEl   = cardEls[cardIdx];
+  if(!srcEl){callback();return;}
+
+  const srcRect = srcEl.getBoundingClientRect();
+  const fanRect = fanEl.getBoundingClientRect();
+
+  // Create a flying clone
+  const clone = srcEl.cloneNode(true);
+  clone.style.cssText = [
+    'position:fixed',
+    `top:${srcRect.top}px`,
+    `left:${srcRect.left}px`,
+    `width:${srcRect.width}px`,
+    `height:${srcRect.height}px`,
+    'margin:0','z-index:9000','pointer-events:none',
+    'transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .28s',
+    'border-radius:10px','will-change:transform,opacity'
+  ].join(';');
+  document.body.appendChild(clone);
+
+  // Destination: centre of the fan area
+  const dx = (fanRect.left + fanRect.width/2) - (srcRect.left + srcRect.width/2);
+  const dy = (fanRect.top  + fanRect.height/2) - (srcRect.top  + srcRect.height/2);
+
+  // Start: hide original immediately so it looks like the card is flying
+  srcEl.style.visibility = 'hidden';
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      clone.style.transform = `translate(${dx}px,${dy}px) scale(.72) rotate(${(Math.random()*18-9).toFixed(1)}deg)`;
+      clone.style.opacity   = '0';
+    });
+  });
+
+  setTimeout(()=>{
+    clone.remove();
+    callback();
+  }, 300);
+}
+
+function _doDiscardCommit(){
+  if(G.selectedCardIdx===null) return;
+  const card=G.playerHand.splice(G.selectedCardIdx,1)[0];
+  G.selectedCardIdx=null;
+  G.selectedCardIds.clear();
+  // Also remove any committed melds that contained this card (it's gone)
+  G.committedMelds=G.committedMelds.filter(m=>!m.cardIds.includes(String(card.id)));
+  G.discardPile.push(card);
+
+  // truffle pig peek effect
+  if(card.kind==='wild'&&card.wildId==='truffle_pig'&&G.stock.length>0){
+    const peekN=Math.min(3,G.stock.length);
+    G.peekCards=G.stock.slice(G.stock.length-peekN);
+    showGenericModal('🐽 Truffle Pig Roots Around!',
+      `Peek at the top ${peekN} cards: <b>${G.peekCards.map(c=>c.kind==='animal'?c.value+' '+c.name:c.name).join(', ')}</b><br><br><span class="note">They stay in this order. Plan wisely!</span>`,
+      [{label:'Got it',cls:'btn btn-primary',fn:()=>closeModal('modal-generic')}]);
+  }
+
+  G.phase='opp';
+  setLog(`You discarded <b>${card.kind==='animal'?card.name:card.name}</b>.`);
+  renderHandScreen();
+  setTimeout(doOppTurn, 800);
+}
+
+function doSlamDown(){
+  if(G.phase!=='discard'||G.selectedCardIds.size!==1) return;
+  const id=[...G.selectedCardIds][0];
+  const committedIds=getCommittedMeldIds();
+  if(committedIds.has(String(id))) return;
+  const idx=G.playerHand.findIndex(c=>String(c.id)===String(id));
+  if(idx<0) return;
+  const discarded=G.playerHand.splice(idx,1)[0];
+  G.discardPile.push(discarded);
+  G.selectedCardIdx=null;
+  G.selectedCardIds.clear();
+  G.phase='over';
+  resolveSlam(true);
+}
+
+// ================================================================
+// ABILITIES
+// ================================================================
+function useShowPig(){
+  if(G.showPigUsed||G.phase==='draw') return;
+  G.showPigUsed=true;
+  const den=getCurrentDen();
+  const{deadwood}=solveMelds(G.oppHand,den.rankBuffs,false);
+  if(deadwood.length===0){
+    showGenericModal('🎀 Show Pig','The opponent has no unmelded cards — they might be about to Slam!',[{label:'Noted!',cls:'btn btn-primary',fn:()=>closeModal('modal-generic')}]);
+  } else {
+    const highest=deadwood.reduce((a,b)=>cardDeadwoodCost(b,den.rankBuffs)>cardDeadwoodCost(a,den.rankBuffs)?b:a);
+    showGenericModal('🎀 Show Pig Struts!',
+      `The opponent's highest unmelded card is: <b style="color:var(--gold)">${highest.kind==='animal'?highest.value+' '+highest.name+' '+highest.habEmoji:highest.name}</b> (${cardDeadwoodCost(highest,den.rankBuffs)} DW).<br><br>They have <b>${deadwood.length}</b> unmelded cards totalling <b>${deadwood.reduce((s,c)=>s+cardDeadwoodCost(c,den.rankBuffs),0)}</b> DW.`,
+      [{label:'Thanks!',cls:'btn btn-primary',fn:()=>closeModal('modal-generic')}]);
+  }
+  renderAbilityBar();
+}
+
+function useGreasedPiglet(){
+  if(G.greasedPigletUsed||G.discardPile.length===0) return;
+  const pigIdx=G.playerHand.findIndex(c=>c.kind==='wild'&&c.wildId==='greased_piglet');
+  if(pigIdx<0) return;
+  G.greasedPigletUsed=true;
+  const pig=G.playerHand.splice(pigIdx,1)[0];
+  const top=G.discardPile.pop();
+  G.playerHand.push(top);
+  G.discardPile.push(pig);
+  rollHogWilds(G.playerHand);
+  setLog(`<b>Greased Piglet</b> slips into the discard and swaps for <b>${top.kind==='animal'?top.name:top.name}</b>!`);
+  renderHandScreen();
+}
+
+function useSecondWind(){
+  if(G.secondWindUsed) return;
+  G.secondWindUsed=true;
+  const handSize=G.playerHand.length-(G.phase==='discard'?1:0);
+  G.stock.push(...G.playerHand);
+  G.playerHand=[];
+  shuffle(G.stock);
+  for(let i=0;i<Math.min(handSize,G.stock.length);i++) G.playerHand.push(G.stock.pop());
+  rollHogWilds(G.playerHand);
+  G.selectedCardIdx=null;
+  G.selectedCardIds.clear();
+  G.committedMelds=[];
+  setLog('<b>Second Wind!</b> Your hand was shuffled back and redealt.');
+  G.phase='discard'; // counts as having drawn
+  renderHandScreen();
+}
+
+function useMirrorPond(){
+  if(G.mirrorPondUsed||G.phase==='opp') return;
+  showGenericModal('🪞 Mirror Pond','Choose a rank to pull from the stock:',
+    RANKS.map(r=>({label:`${r.emoji} ${r.value} — ${r.name}`,cls:'btn btn-ghost btn-sm',fn:()=>{
+      closeModal('modal-generic');
+      const idx=G.stock.findIndex(c=>c.kind==='animal'&&c.value===r.value);
+      if(idx<0){setLog(`<span class="log-bad">Mirror Pond:</span> No <b>${r.name}</b> in the stock!`);return;}
+      G.mirrorPondUsed=true;
+      const card=G.stock.splice(idx,1)[0];
+      G.playerHand.push(card);
+      rollHogWilds(G.playerHand);
+      G.phase='discard';
+      G.selectedCardIdx=null;
+      setLog(`<b>Mirror Pond</b> pulls a <b>${r.name}</b> straight from the stock!`);
+      renderHandScreen();
+    }}))
+  );
+}
+
+function useStoneSkin(){
+  if(G.stoneSkinUsed) return;
+  showGenericModal('🪨 Stone Skin','Click a card in your hand to mark it as 0 deadwood for this Slam check.',
+    [{label:'Cancel',cls:'btn btn-ghost',fn:()=>closeModal('modal-generic')}]);
+  // enable special selection mode
+  G.stoneSkinActive=true;
+}
+
+// called when a card is clicked in stone skin mode
+function stoneSkinSelectCard(idx){
+  if(!G.stoneSkinActive) return false;
+  // idx can be index into playerHand or via card id — handle both
+  const card=typeof idx==='number'?G.playerHand[idx]:G.playerHand.find(c=>String(c.id)===String(idx));
+  if(!card) return false;
+  G.stoneSkinActive=false;
+  G.stoneSkinUsed=true;
+  G.stoneSkinCardId=card.id;
+  closeModal('modal-generic');
+  setLog('<b>Stone Skin</b> hardens — that card counts as 0 deadwood!');
+  renderHandScreen();
+  return true;
+}
+
+// ================================================================
+// OPPONENT AI TURN
+// ================================================================
+function doOppTurn(){
+  document.getElementById('opp-thinking-label').style.display='block';
+  setTimeout(()=>{
+    _doOppTurnInner();
+    document.getElementById('opp-thinking-label').style.display='none';
+  },600);
+}
+
+function _doOppTurnInner(){
+  const den=getCurrentDen();
+  rollHogWilds(G.oppHand);
+
+  // Decide: draw stock or take from discard pile?
+  // AI evaluates: top card only (AI doesn't deep-reach, that's the player skill advantage)
+  let drawFromStock=true;
+  let oppTakeIdx=G.discardPile.length-1; // default: top card
+  if(G.discardPile.length>0){
+    const top=G.discardPile[G.discardPile.length-1];
+    const withDiscard=[...G.oppHand,top];
+    let bestWith=Infinity;
+    for(let i=0;i<withDiscard.length;i++){
+      const trial=withDiscard.filter((_,j)=>j!==i);
+      const{totalDW}=solveMelds(trial,den.rankBuffs,false);
+      bestWith=Math.min(bestWith,totalDW);
+    }
+    const{totalDW:curBest}=solveMelds(G.oppHand,den.rankBuffs,false);
+    if(bestWith<curBest) drawFromStock=false;
+  }
+
+  if(drawFromStock){
+    if(G.stock.length===0){setLog('Stock exhausted — the hand is a push!');endHandPush();return;}
+    G.oppHand.push(G.stock.pop());
+  } else {
+    // AI takes only the top card (deep-reach is a player-only strategic tool)
+    G.oppHand.push(G.discardPile.pop());
+  }
+  rollHogWilds(G.oppHand);
+
+  // Choose what to discard
+  let bestDiscardIdx=0;
+  let bestDW=Infinity;
+  for(let i=0;i<G.oppHand.length;i++){
+    const trial=G.oppHand.filter((_,j)=>j!==i);
+    const{totalDW}=solveMelds(trial,den.rankBuffs,false);
+    if(totalDW<bestDW||(totalDW===bestDW&&cardDeadwoodCost(G.oppHand[i],den.rankBuffs)>cardDeadwoodCost(G.oppHand[bestDiscardIdx],den.rankBuffs))){
+      bestDW=totalDW;bestDiscardIdx=i;
+    }
+  }
+
+  // Compute opponent's projected score after discarding bestDiscardIdx
+  {
+    const trialHand=G.oppHand.filter((_,j)=>j!==bestDiscardIdx);
+    const oppMeldResult=solveMelds(trialHand,den.rankBuffs,false);
+    // Compute opp chips×mult (simplified — no wild pig triggers for opp)
+    const oppChips=oppMeldResult.melds.reduce((s,m)=>s+m.cards.reduce((s2,c)=>s2+cardChipValue(c),0),0);
+    const oppMult=Math.max(1,oppMeldResult.melds.reduce((s,m)=>s+(m.type==='trail'?2:1),0));
+    const oppDW=oppMeldResult.totalDW;
+    const oppScore=Math.max(0,Math.floor(oppChips*oppMult)-oppDW);
+    // Difficulty scales how close to target opp needs before slamming
+    // easy: needs ≥120% target, medium: ≥90%, hard: ≥70%
+    const diffMult={easy:1.2,medium:0.9,hard:0.7}[G.difficulty]||0.9;
+    const oppSlamsAt=den.scoreTarget*diffMult;
+    const shouldSlam=oppScore>=oppSlamsAt;
+    if(shouldSlam){
+      G.oppHand.splice(bestDiscardIdx,1);
+      G.phase='over';
+      setLog(`<b>${den.boss}</b> discards and <b style="color:var(--red)">SLAMS DOWN!</b> (${oppScore.toLocaleString()} pts)`);
+      renderHandScreen();
+      setTimeout(()=>resolveSlam(false),400);
+      return;
+    }
+  }
+
+  const discarded=G.oppHand.splice(bestDiscardIdx,1)[0];
+  G.discardPile.push(discarded);
+  G.phase='draw';
+  G.turnCount++;
+  setLog(`<b>${den.boss}</b> draws and discards. Your turn — draw from stock or take the discard.`);
+  renderHandScreen();
+}
+
+// ================================================================
+// SLAM RESOLUTION
+// ================================================================
+
+// ════════════════════════════════════════════════════════════════
+// BALATRO-STYLE SCORING ENGINE
+// ════════════════════════════════════════════════════════════════
+
+// Returns base chip value of a single card
+function cardChipValue(card){
+  if(card.kind==='animal') return card.value; // face value
+  if(card.kind==='wild') return 0;  // wild pigs score through triggers
+  if(card.kind==='feral') return 0;
+  return 0;
+}
+
+// Computes full chips × mult score for a set of committed melds.
+// Returns {chips, mult, score, breakdown:[{label,chips,mult,running}]}
+function computeHandScore(committedMelds, playerHand, isCleanSlam){
+  const den = getCurrentDen();
+  const breakdown = [];
+  let chips = 0;
+  let mult  = G.permanentMult; // starts at permanent mult (Guard Hog builds this)
+
+  // Helper to add to running score and log it
+  function addChips(n, label){ chips+=n; breakdown.push({type:'chips',label,n,running:chips,mult}); }
+  function addMult(n, label){  mult+=n;  breakdown.push({type:'mult',label,n,running:chips,mult}); }
+  function mulMult(n, label){  mult*=n;  breakdown.push({type:'xmult',label,n,running:chips,mult}); }
+
+  // ── Piggy Bank carry-in ──────────────────────────────────────
+  if(G.piggyBankStored>0){
+    addChips(G.piggyBankStored, `🐷 Piggy Bank carry (+${G.piggyBankStored})`);
+  }
+
+  // ── Base score: each meld scores sum(card chips) × meld mult ─
+  let meldIndex = 0;
+  let wildsUsedInMelds = 0;
+
+  for(const meld of committedMelds){
+    const cards = meld.cardIds.map(id=>playerHand.find(c=>String(c.id)===String(id))).filter(Boolean);
+    const meldType = meld.type; // 'pack' or 'trail'
+    const hab = meld.hab;
+
+    // Base chips: sum of card face values
+    let meldChips = cards.reduce((s,c)=>s+cardChipValue(c),0);
+    let meldMult  = meldType==='pack' ? 1 : 2; // Trails get higher base mult
+
+    // Stampede tarot: Bison and Bear triple their chip value
+    if(G.stampedeTurnActive){
+      cards.forEach(c=>{
+        if(c.kind==='animal'&&(c.name==='Bison'||c.name==='Bear')){
+          const bonus = c.value*2; // triple = original + 2x
+          meldChips += bonus;
+        }
+      });
+    }
+
+    // Wilds in meld
+    const wildCards = cards.filter(c=>c.kind==='wild'||c.kind==='feral');
+    wildsUsedInMelds += wildCards.length;
+
+    // Planet: Forest Floor — forest melds +0.5 mult each
+    if(G.charms.includes('forest_floor')&&hab==='forest'){
+      meldMult += CHARMS['forest_floor'].forestMult||0;
+    }
+    // Planet: Trail upgrades
+    if(meldType==='trail'&&G.charms.includes('acorn_oak')){
+      meldMult += CHARMS['acorn_oak'].trailMult||0;
+    }
+    if(meldType==='trail'&&cards.length>=5&&G.charms.includes('ancient_trail')){
+      meldMult *= CHARMS['ancient_trail'].longTrailMultMul||1;
+    }
+    // Planet: Pack bonus
+    if(meldType==='pack'&&cards.length>=4&&G.charms.includes('pack_leader')){
+      meldChips += 20; meldMult += 1;
+    }
+    // Planet: Wolf Moon — wolves in melds
+    if(G.charms.includes('wolf_moon')){
+      const wolves = cards.filter(c=>c.kind==='animal'&&c.name==='Wolf');
+      meldChips += wolves.length*(CHARMS['wolf_moon'].wolfChips||0);
+    }
+
+    // Show Pig scoring: first meld +3 mult
+    const hasShowPig = playerHand.some(c=>c.kind==='wild'&&c.wildId==='show_pig');
+    if(hasShowPig && meldIndex===0){
+      meldMult += 3;
+      breakdown.push({type:'pig',label:'🎀 Show Pig: first meld +3 mult',n:3});
+    }
+
+    // Truffle Pig: each pack ×2 mult (multiplicative)
+    const hasTrufflePig = playerHand.some(c=>c.kind==='wild'&&c.wildId==='truffle_pig');
+    if(hasTrufflePig && meldType==='pack'){
+      meldMult *= 2;
+      breakdown.push({type:'pig',label:'🐽 Truffle Pig: Pack ×2 mult',n:2});
+    }
+
+    // Boss Hog: wolves in hand at slam time
+    const hasBossHog = playerHand.some(c=>c.kind==='wild'&&c.wildId==='boss_hog');
+    if(hasBossHog){
+      const wolvesInHand = playerHand.filter(c=>c.kind==='animal'&&c.name==='Wolf').length;
+      meldChips += wolvesInHand * 8;
+      if(wolvesInHand>0) breakdown.push({type:'pig',label:`👑 Boss Hog: ${wolvesInHand} Wolves +${wolvesInHand*8} chips`,n:wolvesInHand*8});
+    }
+
+    // Boss Rule: Wolf Tax (Den 3)
+    if(den.bossRule?.id==='wolf_tax'&&meldType==='pack'){
+      const wolves = cards.filter(c=>c.kind==='animal'&&c.name==='Wolf');
+      if(wolves.length>0) meldChips *= 2;
+    }
+    // Boss Rule: Trail Curse (Den 4) — trails get 1× mult only
+    if(den.bossRule?.id==='trail_curse'&&meldType==='trail'){
+      meldMult = 1;
+    }
+
+    addChips(meldChips, `${meldType==='pack'?'🃏 Pack':'🔗 Trail'} chips`);
+    addMult(meldMult,   `${meldType==='pack'?'Pack':'Trail'} ×${meldMult.toFixed(1)} mult`);
+    meldIndex++;
+  }
+
+  // ── Wild Pig global triggers ─────────────────────────────────
+  // Mud Pig: +20 chips per wild in melds
+  const hasMudPig = playerHand.some(c=>c.kind==='wild'&&c.wildId==='mud_pig');
+  if(hasMudPig && wildsUsedInMelds>0){
+    addChips(wildsUsedInMelds*20, `🐖 Mud Pig: ${wildsUsedInMelds} wilds +${wildsUsedInMelds*20} chips`);
+  }
+
+  // Hog Wild: if rolled to wolf rank (7)
+  const hogWild = playerHand.find(c=>c.kind==='wild'&&c.wildId==='hog_wild');
+  if(hogWild && G.hogWildRolls[hogWild.id]===7){
+    mulMult(3, '🌀 Hog Wild: Wolf roll ×3 mult!');
+  }
+
+  // ── Clean Slam bonus ─────────────────────────────────────────
+  if(isCleanSlam){
+    mulMult(2, '💫 Clean Slam ×2 mult!');
+  }
+
+  // ── Boss Rule: Triple Threat (Den 7) — must set 3+ melds ────
+  if(den.bossRule?.id==='triple_threat'&&committedMelds.length<3){
+    chips = Math.floor(chips/2);
+    breakdown.push({type:'penalty',label:'⚠️ Triple Threat: <3 melds, score halved!',n:-1});
+  }
+
+  // ── Boss Rule: Stampede Clock — turn penalty ─────────────────
+  if(den.bossRule?.id==='stampede_clock'&&G.turnCount>8){
+    const penalty = Math.floor((G.turnCount-8)/2)*50;
+    chips = Math.max(0, chips-penalty);
+    breakdown.push({type:'penalty',label:`⏰ Stampede: turn ${G.turnCount}, -${penalty} chips`,n:-penalty});
+  }
+
+  // ── Deadwood penalty ─────────────────────────────────────────
+  const committedIds = getCommittedMeldIds();
+  const deadwoodCards = playerHand.filter(c=>!committedIds.has(String(c.id)));
+  const dwPenalty = deadwoodCards.reduce((s,c)=>s+cardDeadwoodCost(c,den.rankBuffs),0);
+  if(dwPenalty>0){
+    chips = Math.max(0, chips - dwPenalty);
+    breakdown.push({type:'penalty',label:`💀 Deadwood penalty -${dwPenalty}`,n:-dwPenalty});
+  }
+
+  const score = Math.floor(chips * mult);
+  return {chips, mult, score, breakdown, dwPenalty};
+}
+
+// Show the live score ticker (called whenever melds change)
+function renderScoreTicker(){
+  const el = document.getElementById('score-ticker');
+  if(!el) return;
+  if(G.committedMelds.length===0){
+    el.innerHTML='<span style="color:var(--text-faint);font-size:.75rem">Set melds to see score</span>';
+    return;
+  }
+  const {chips,mult,score,breakdown} = computeHandScore(G.committedMelds, G.playerHand, false);
+  const den = getCurrentDen();
+  const pct = Math.min(100, Math.round(score/den.scoreTarget*100));
+  const hitTarget = score >= den.scoreTarget;
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:.7rem;color:var(--text-faint);font-weight:700;letter-spacing:1px">CHIPS</span>
+        <span style="font-family:'Lilita One',cursive;font-size:1.4rem;color:var(--blue)">${chips}</span>
+        <span style="color:var(--text-faint);font-size:1rem">×</span>
+        <span style="font-family:'Lilita One',cursive;font-size:1.4rem;color:var(--pink)">${mult.toFixed(1)}</span>
+        <span style="color:var(--text-faint);font-size:1rem">=</span>
+        <span style="font-family:'Lilita One',cursive;font-size:1.8rem;color:${hitTarget?'var(--green)':'var(--gold)'};text-shadow:0 0 12px ${hitTarget?'rgba(110,196,74,.5)':'rgba(232,168,48,.4)'}">${score.toLocaleString()}</span>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div style="font-size:.65rem;color:var(--text-faint);margin-bottom:3px">TARGET: ${den.scoreTarget.toLocaleString()} ${hitTarget?'✓':''}</div>
+        <div style="background:var(--bg3);border-radius:6px;height:8px;overflow:hidden">
+          <div style="height:100%;border-radius:6px;background:${hitTarget?'var(--green)':'var(--gold)'};width:${pct}%;transition:width .3s"></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function resolveSlam(playerSlammed){
+  const den = getCurrentDen();
+  const isCleanSlam = getDeadwoodTotal()===0;
+
+  // ── Player score ─────────────────────────────────────────────
+  const {chips,mult,score,breakdown,dwPenalty} = computeHandScore(G.committedMelds, G.playerHand, isCleanSlam);
+  G.lastHandScore = score;
+
+  // ── Piggy Bank: store 50% for next hand ───────────────────────
+  const hasPiggyBank = G.playerHand.some(c=>c.kind==='wild'&&c.wildId==='piggy_bank');
+  G.piggyBankStored = hasPiggyBank ? Math.floor(score*0.5) : 0;
+
+  // ── Guard Hog: permanent mult if it was in a meld ─────────────
+  const committedIds = getCommittedMeldIds();
+  const guardInMeld = G.playerHand.some(c=>c.kind==='wild'&&c.wildId==='guard_hog'&&committedIds.has(String(c.id)));
+  if(guardInMeld){
+    G.permanentMult = parseFloat((G.permanentMult + 0.5).toFixed(1));
+  }
+
+  // ── Tusk Polish milestone ─────────────────────────────────────
+  G.totalMeldsSet += G.committedMelds.length;
+  if(G.charms.includes('tusk_polish')&&Math.floor(G.totalMeldsSet/4) > Math.floor((G.totalMeldsSet-G.committedMelds.length)/4)){
+    G.permanentMult = parseFloat((G.permanentMult + 1).toFixed(1));
+  }
+
+  // ── Boss Rule: Alpha Mirrors — opp starts with last mult ──────
+  let oppTargetMult = 1;
+  if(den.bossRule?.id==='alpha_mirrors'){
+    oppTargetMult = G.permanentMult;
+  }
+
+  // ── Opponent score (auto-solved) ──────────────────────────────
+  const oppResult = solveMelds(G.oppHand, den.rankBuffs, false);
+  const oppBaseChips = oppResult.melds.reduce((s,m)=>s+m.cards.reduce((s2,c)=>s2+cardChipValue(c),0),0);
+  const oppBaseMult  = oppResult.melds.reduce((s,m)=>s+(m.type==='trail'?2:1),0) || 1;
+  const oppScore     = Math.floor(oppBaseChips * oppBaseMult * oppTargetMult);
+
+  // ── Win condition: hit score target ───────────────────────────
+  const targetMet = score >= den.scoreTarget;
+
+  // ── Boss Rule: Mirror Rule — opp copies highest meld chips ───
+  if(den.bossRule?.id==='mirror_rule'&&G.committedMelds.length>0){
+    const highest = Math.max(...G.committedMelds.map(m=>{
+      const cards = m.cardIds.map(id=>G.playerHand.find(c=>String(c.id)===String(id))).filter(Boolean);
+      return cards.reduce((s,c)=>s+cardChipValue(c),0);
+    }));
+    // Opp gains that many extra chips
+    const mirrorBoost = highest;
+    breakdown.push({type:'penalty',label:`🐒 Monkey See: opp +${mirrorBoost} chips`,n:-mirrorBoost});
+  }
+
+  // ── Determine hand outcome ─────────────────────────────────────
+  let playerWinsHand = false;
+  let outcomeLabel='';
+  let outcomeColor='var(--red)';
+
+  if(!playerSlammed){
+    // Opponent slammed — player loses this hand regardless of score
+    playerWinsHand = false;
+    outcomeLabel = '💀 Opponent Slammed!';
+    outcomeColor = 'var(--red)';
+  } else if(isCleanSlam && targetMet){
+    playerWinsHand = true;
+    outcomeLabel = '💫 CLEAN SLAM!';
+    outcomeColor = 'var(--green)';
+  } else if(targetMet){
+    playerWinsHand = true;
+    outcomeLabel = '🐾 SLAM DOWN!';
+    outcomeColor = 'var(--green)';
+  } else {
+    // Thick Hide: ignore first miss per den
+    if(G.charms.includes('thick_hide')&&!G.thickHideUsed){
+      G.thickHideUsed = true;
+      playerWinsHand = true;
+      outcomeLabel = '🛡️ Thick Hide absorbs the miss!';
+      outcomeColor = 'var(--gold)';
+    } else {
+      playerWinsHand = false;
+      outcomeLabel = '❌ Target missed!';
+      outcomeColor = 'var(--red)';
+    }
+  }
+
+  if(playerWinsHand) G.denPlayerWins++;
+  else G.denOppWins++;
+
+  // ── Acorn bonuses ─────────────────────────────────────────────
+  let handAcorns = 0;
+  if(playerWinsHand){
+    handAcorns += Math.floor(score/100); // 1 acorn per 100 score
+    if(G.charms.includes('golden_trough')) handAcorns*=2;
+  }
+  G.acorns += handAcorns;
+  G.handAcorns += handAcorns;
+  updateTopbar();
+
+  // ── Reveal modal ──────────────────────────────────────────────
+  const resultTitle = document.getElementById('hand-result-title');
+  const resultBody  = document.getElementById('hand-result-body');
+  const reveal      = document.getElementById('hand-reveal');
+  resultTitle.textContent = outcomeLabel;
+  resultTitle.style.color = outcomeColor;
+
+  // Breakdown display
+  const bdHTML = breakdown.map(b=>{
+    let col = b.type==='chips'?'var(--blue)':b.type==='mult'||b.type==='xmult'?'var(--pink)':b.type==='pig'?'var(--gold)':'var(--red)';
+    let val = b.type==='chips'?`+${b.n} chips`:b.type==='xmult'?`×${b.n} mult`:b.type==='mult'?`+${b.n.toFixed?b.n.toFixed(1):b.n} mult`:b.n;
+    return `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border-soft);font-size:.75rem">
+      <span style="color:var(--text-dim)">${b.label}</span>
+      <span style="color:${col};font-weight:800">${val}</span>
+    </div>`;
+  }).join('');
+
+  reveal.innerHTML = `
+    <div style="grid-column:1/-1">
+      <div style="text-align:center;margin-bottom:12px">
+        <div style="font-size:.7rem;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">SCORE</div>
+        <div style="font-family:'Lilita One',cursive;font-size:2.5rem;color:${playerWinsHand?'var(--green)':'var(--red)'};text-shadow:0 0 20px ${playerWinsHand?'rgba(110,196,74,.4)':'rgba(216,80,64,.4)'}">${score.toLocaleString()}</div>
+        <div style="font-size:.8rem;color:var(--text-dim)">Target: ${den.scoreTarget.toLocaleString()} — ${playerWinsHand?'<span style=color:var(--green)>HIT ✓</span>':'<span style=color:var(--red)>MISSED ✗</span>'}</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:10px;max-height:180px;overflow-y:auto">${bdHTML}</div>
+    </div>`;
+
+  resultBody.innerHTML = `
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:10px">
+      <div style="text-align:center"><div style="font-size:.65rem;color:var(--text-faint);text-transform:uppercase">Chips</div><div style="font-family:'Lilita One',cursive;color:var(--blue);font-size:1.2rem">${chips}</div></div>
+      <div style="text-align:center"><div style="font-size:.65rem;color:var(--text-faint);text-transform:uppercase">Mult</div><div style="font-family:'Lilita One',cursive;color:var(--pink);font-size:1.2rem">${mult.toFixed(1)}×</div></div>
+      <div style="text-align:center"><div style="font-size:.65rem;color:var(--text-faint);text-transform:uppercase">Deadwood</div><div style="font-family:'Lilita One',cursive;color:var(--red);font-size:1.2rem">-${dwPenalty}</div></div>
+      ${handAcorns>0?`<div style="text-align:center"><div style="font-size:.65rem;color:var(--text-faint);text-transform:uppercase">Acorns</div><div style="font-family:'Lilita One',cursive;color:var(--gold);font-size:1.2rem">+${handAcorns} 🌰</div></div>`:''}
+      ${G.piggyBankStored>0?`<div style="text-align:center"><div style="font-size:.65rem;color:var(--text-faint);text-transform:uppercase">Banked</div><div style="font-family:'Lilita One',cursive;color:var(--gold);font-size:1.2rem">${G.piggyBankStored} 🐷</div></div>`:''}
+      ${G.permanentMult>1?`<div style="text-align:center"><div style="font-size:.65rem;color:var(--text-faint);text-transform:uppercase">Perm Mult</div><div style="font-family:'Lilita One',cursive;color:var(--green);font-size:1.2rem">${G.permanentMult}×</div></div>`:''}
+    </div>`;
+
+  openModal('modal-hand-result');
+}
+
+function endHandPush(){
+  // Stock exhausted — highest score wins the hand (fix #5)
+  const den=getCurrentDen();
+  G.phase='over';
+  // Score both sides with current committed melds
+  const playerScore=G.committedMelds.length>0
+    ? computeHandScore(G.committedMelds,G.playerHand,false).score
+    : 0;
+  const oppResult=solveMelds(G.oppHand,den.rankBuffs,false);
+  const oppChips=oppResult.melds.reduce((s,m)=>s+m.cards.reduce((s2,c)=>s2+cardChipValue(c),0),0);
+  const oppMult=Math.max(1,oppResult.melds.reduce((s,m)=>s+(m.type==='trail'?2:1),0));
+  const oppDW=oppResult.totalDW;
+  const oppScore=Math.max(0,Math.floor(oppChips*oppMult)-oppDW);
+
+  if(playerScore>oppScore){
+    G.denPlayerWins++;
+    showGenericModal('🃏 Stock Exhausted — You Win!',
+      `No more cards to draw! Your score <b style="color:var(--green)">${playerScore.toLocaleString()}</b> beats their <b>${oppScore.toLocaleString()}</b>. You take this hand!`,
+      [{label:'Continue →',cls:'btn btn-primary',fn:()=>{closeModal('modal-generic');continueAfterHandPush();}}]);
+  } else if(oppScore>playerScore){
+    G.denOppWins++;
+    showGenericModal('🃏 Stock Exhausted — Opponent Wins',
+      `No more cards! The opponent's score <b style="color:var(--red)">${oppScore.toLocaleString()}</b> beats your <b>${playerScore.toLocaleString()}</b>. They take this hand.`,
+      [{label:'Continue →',cls:'btn btn-primary',fn:()=>{closeModal('modal-generic');continueAfterHandPush();}}]);
+  } else {
+    showGenericModal('⚖️ Stock Exhausted — Tie',
+      `Scores tied at ${playerScore.toLocaleString()} each. Neither player takes this hand.`,
+      [{label:'Continue →',cls:'btn btn-primary',fn:()=>{closeModal('modal-generic');continueAfterHandPush();}}]);
+  }
+}
+
+function continueAfterHandPush(){
+  const den=getCurrentDen();
+  if(G.denPlayerWins>=den.handsToWin||G.denOppWins>=den.handsToWin){
+    showDenResult();
+  } else {
+    startNewHand();
+  }
+}
+
+function nextHandOrDenResult(){
+  closeModal('modal-hand-result');
+  const den=getCurrentDen();
+  if(G.denPlayerWins>=den.handsToWin||G.denOppWins>=den.handsToWin){
+    showDenResult();
+  } else {
+    startNewHand();
+  }
+}
+
+// ================================================================
+// DEN RESULT
+// ================================================================
+function showDenResult(){
+  const den=getCurrentDen();
+  const playerWon=G.denPlayerWins>=den.handsToWin;
+  showScreen('screen-den-result');
+
+  let acornGain=0;
+  if(playerWon){
+    const denBonus=den.acorns*(G.charms.includes('golden_trough')?2:1);
+    acornGain=denBonus;
+    G.acorns+=denBonus;
+    if(!G.isEndless) G.densCleared=Math.max(G.densCleared,den.num);
+    G.thickHideUsed=false; // reset for next den
+    updateTopbar();
+  }
+
+  const hero=document.getElementById('den-result-hero');
+  if(playerWon){
+    let breakdown='';
+    if(G.charms.includes('golden_trough')) breakdown+=`<div class="rb-item"><span class="rb-val">×2</span><span class="rb-label">Golden Trough</span></div>`;
+    breakdown+=`<div class="rb-item"><span class="rb-val">+${den.acorns*(G.charms.includes('golden_trough')?2:1)}</span><span class="rb-label">Den Reward</span></div>`;
+    if(G.handAcorns>0) breakdown+=`<div class="rb-item"><span class="rb-val">+${G.handAcorns}</span><span class="rb-label">Hand Bonuses</span></div>`;
+
+    let btns=`<button class="btn btn-gold btn-lg" onclick="startDraft()">🐖 Draft a Wild Pig</button>`;
+    if(den.deckCull) btns+=` <button class="btn btn-ghost" onclick="startCull()">✂️ Cull Deck</button>`;
+    if(den.isFinal&&!G.isEndless){
+      btns=`<button class="btn btn-primary btn-lg" onclick="startEndless()">🌀 Wilds Beyond</button> `+btns;
+      hero.innerHTML=`
+        <div class="result-icon">🏆</div>
+        <div class="result-title" style="color:var(--gold)">THE ALPHA FALLS!</div>
+        <div class="result-sub">You've conquered all 8 Dens and emerged victorious from <b>The Alpha's Den</b>!<br>The Wilds Beyond await…</div>
+        <div class="result-breakdown"><div class="rb-item"><span class="rb-val">+${den.acorns*(G.charms.includes('golden_trough')?2:1)}</span><span class="rb-label">Final Reward</span></div>${G.handAcorns>0?`<div class="rb-item"><span class="rb-val">+${G.handAcorns}</span><span class="rb-label">Hand Bonuses</span></div>`:''}</div>
+        <div style="margin-bottom:16px"><div class="result-acorns">🌰 ${G.acorns}</div></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${btns}</div>`;
+      return;
+    }
+
+    hero.innerHTML=`
+      <div class="result-icon">🏆</div>
+      <div class="result-title" style="color:var(--green)">Den Cleared!</div>
+      <div class="result-sub">${den.emoji} <b>${den.name}</b> defeated ${G.denPlayerWins}–${G.denOppWins}</div>
+      <div class="result-breakdown">${breakdown}</div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:.8rem;color:var(--text-faint);margin-bottom:4px">Total Acorns</div>
+        <div class="result-acorns">🌰 ${G.acorns}</div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${btns}</div>`;
+  } else {
+    hero.innerHTML=`
+      <div class="result-icon">💀</div>
+      <div class="result-title" style="color:var(--red)">Defeated…</div>
+      <div class="result-sub">The <b>${den.boss}</b> drove you out of <b>${den.name}</b> (${G.denPlayerWins}–${G.denOppWins}).</div>
+      <div class="result-acorns" style="font-size:1.5rem">🌰 ${G.acorns} Acorns saved</div>
+      <div style="margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary btn-lg" onclick="startGame()">🔄 Start New Run</button>
+      </div>`;
+  }
+}
+
+function retryDen(){
+  G.denPlayerWins=0;G.denOppWins=0;G.thickHideUsed=false;G.handNum=0;
+  G.handAcorns=0;
+  startNewHand();
+}
+
+function startEndless(){
+  G.isEndless=true;G.endlessCount=1;
+  G.denPlayerWins=0;G.denOppWins=0;G.thickHideUsed=false;G.handNum=0;G.handAcorns=0;
+  renderDenMap();
+  showScreen('screen-map');
+}
+
+// ================================================================
+// DRAFT
+// ================================================================
+function startDraft(){
+  const den=getCurrentDen();
+  const pool=buildDraftPool(den);
+  showScreen('screen-draft');
+  G._draftPool=pool;
+  G._draftChosen=null;
+
+  const grid=document.getElementById('draft-pick-grid');
+  grid.innerHTML=pool.map((p,i)=>{
+    const desc=WILD_PIGS[p.id].desc;
+    const rarity=p.rarity;
+    return `<div class="pick-card" id="draft-${i}" onclick="chooseDraft(${i})">
+      <span class="pick-emoji">${p.emoji}</span>
+      <div class="pick-rarity ${rarity}">${rarity.toUpperCase()}</div>
+      <div class="pick-name">${p.name}</div>
+      <div class="pick-desc">${desc}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('btn-draft-confirm').disabled=true;
+}
+
+function buildDraftPool(den){
+  const pool=den.wildPool||['common'];
+  const all=Object.values(WILD_PIGS);
+  let candidates=all.filter(p=>pool.includes(p.rarity));
+  if(den.guaranteedLegendary) candidates=candidates.filter(p=>p.rarity==='legendary').concat(candidates.filter(p=>p.rarity!=='legendary'));
+  shuffle(candidates);
+  // don't offer dupes the player already owns
+  const owned=G.playerDeck.filter(c=>c.kind==='wild').map(c=>c.wildId);
+  candidates=candidates.filter(p=>!owned.includes(p.id));
+  if(candidates.length===0) candidates=all.slice();
+  return candidates.slice(0,Math.min(den.wildChoices||2,candidates.length));
+}
+
+function chooseDraft(i){
+  document.querySelectorAll('.pick-card').forEach(el=>el.classList.remove('chosen'));
+  document.getElementById('draft-'+i).classList.add('chosen');
+  G._draftChosen=i;
+  document.getElementById('btn-draft-confirm').disabled=false;
+}
+
+function confirmDraft(){
+  if(G._draftChosen===null) return;
+  const pig=G._draftPool[G._draftChosen];
+  G.playerDeck.push(makeWildPig(pig.id));
+  flyAcorns(`Added ${pig.emoji} ${pig.name} to deck!`);
+  updateTopbar();
+  afterDraft();
+}
+
+function skipDraft(){afterDraft();}
+
+function afterDraft(){
+  const den=getCurrentDen();
+  if(den.shop&&!G.isEndless){
+    showScreen('screen-map');
+    renderDenMap();
+  } else {
+    advanceDen();
+  }
+}
+
+// ================================================================
+// DECK CULL
+// ================================================================
+function startCull(){
+  showScreen('screen-cull');
+  G._cullChosen=null;
+  const zone=document.getElementById('cull-zone');
+  // show all animal cards (and any excess wilds if multiples)
+  const cullable=G.playerDeck.filter(c=>c.kind==='animal');
+  zone.innerHTML=cullable.map((c,i)=>{
+    const habColors={forest:'#1a3a14',plains:'#3a2e0a',tundra:'#0a2235',swamp:'#0a2820'};
+    const habBorder={forest:'#2d6a22',plains:'#7a6010',tundra:'#1060a0',swamp:'#107050'};
+    return `<div class="cull-card" id="cull-${i}" style="background:${habColors[c.hab]};border-color:${habBorder[c.hab]};color:${['forest','plains','tundra','swamp'].indexOf(c.hab)>=0?['#7ed957','#f3bb4a','#5cc8ff','#7ee8c0'][[...HABS].findIndex(h=>h.id===c.hab)]:'#f5ecd9'}" onclick="chooseCull(${i})" title="${c.name} ${c.habEmoji}">${c.value}</div>`;
+  }).join('');
+  document.getElementById('btn-cull-confirm').disabled=true;
+  G._cullCandidates=cullable;
+}
+
+function chooseCull(i){
+  document.querySelectorAll('.cull-card').forEach(el=>el.classList.remove('cull-chosen'));
+  document.getElementById('cull-'+i).classList.add('cull-chosen');
+  G._cullChosen=i;
+  document.getElementById('btn-cull-confirm').disabled=false;
+}
+
+function confirmCull(){
+  if(G._cullChosen===null) return;
+  const card=G._cullCandidates[G._cullChosen];
+  const idx=G.playerDeck.findIndex(c=>c.id===card.id);
+  if(idx>=0) G.playerDeck.splice(idx,1);
+  updateTopbar();
+  flyAcorns(`Culled ${card.name} ${card.habEmoji} from deck`);
+  advanceDen();
+}
+
+function skipCull(){advanceDen();}
+
+function advanceDen(){
+  if(G.isEndless){
+    G.endlessCount++;
+    G.denPlayerWins=0;G.denOppWins=0;G.thickHideUsed=false;G.handNum=0;G.handAcorns=0;
+  }
+  renderDenMap();
+  showScreen('screen-map');
+}
+
+// ================================================================
+// SHOP
+// ================================================================
+function useStampede(){
+  if(G.stampedeTurnActive) return;
+  G.stampedeTurnActive=true;
+  setLog('<b>🦬 The Stampede!</b> Bison and Bear score triple chips this hand.');
+  renderAbilityBar();
+  renderScoreTicker();
+}
+
+function useAlphasMark(){
+  if(G.alphasMarkActive||G.selectedCardIds.size!==1) return;
+  G.alphasMarkActive=true;
+  setLog("<b>⭐ Alpha's Mark!</b> That card will count as any rank in your next meld.");
+  renderAbilityBar();
+}
+
+function openShop(){
+  const den=getCurrentDen();
+  const shopSize=den.shopSize||1;
+  showScreen('screen-shop');
+  document.getElementById('shop-subtitle').textContent=`Spend Acorns on permanent Charms. ${shopSize} slot${shopSize>1?'s':''} available.`;
+
+  // pick shopSize+2 charms (varied)
+  const all=Object.values(CHARMS);
+  shuffle(all);
+  const available=all.filter(c=>!G.charms.includes(c.id)).slice(0,Math.min(shopSize+2,all.length));
+
+  const container=document.getElementById('shop-items');
+  container.innerHTML=available.map(c=>{
+    const owned=G.charms.includes(c.id);
+    const cantAfford=G.acorns<c.price&&!owned;
+    return `<div class="shop-item${owned?' owned':cantAfford?' cant-afford':''}" onclick="${owned?'':cantAfford?'':'buyCharm(\''+c.id+'\')'}">
+      <span class="shop-emoji">${c.emoji}</span>
+      <div class="shop-info">
+        <div class="shop-name">${c.name} <span class="pick-rarity ${c.rarity}" style="font-size:.65rem">${c.rarity.toUpperCase()}</span></div>
+        <div style="font-size:.75rem;color:var(--text-dim);margin:3px 0">${c.desc}</div>
+        <div class="${owned?'shop-price owned-label':'shop-price'}">
+          ${owned?'✓ Owned':`🌰 ${c.price} Acorns`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buyCharm(id){
+  const c=CHARMS[id];
+  if(!c||G.charms.includes(id)||G.acorns<c.price) return;
+  G.acorns-=c.price;
+  G.charms.push(id);
+  updateTopbar();
+  flyAcorns(`-${c.price} 🌰 — ${c.emoji} ${c.name}!`);
+  openShop(); // refresh
+}
+
+function leaveShop(){
+  renderDenMap();
+  showScreen('screen-map');
+}
+
+// ================================================================
+// UTIL / UI
+// ================================================================
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // Clear den background when leaving to map/title
+  if(id==='screen-map'||id==='screen-title') document.body.className='';
+}
+
+function openModal(id){document.getElementById(id).classList.remove('hidden');}
+function closeModal(id){document.getElementById(id).classList.add('hidden');}
+
+function setLog(html){document.getElementById('log-zone').innerHTML=html;}
+
+function updateTopbar(){
+  document.getElementById('stat-acorns').textContent=G.acorns;
+  const den=getCurrentDen();
+  document.getElementById('stat-den').textContent=G.isEndless?`WB #${G.endlessCount}`:`${G.densCleared+1}/8`;
+  document.getElementById('stat-deck').textContent=G.playerDeck.length;
+}
+
+function flyAcorns(msg){
+  const el=document.createElement('div');
+  el.className='fly-acorn';
+  el.textContent=msg;
+  el.style.top='60px';
+  el.style.left='50%';
+  el.style.transform='translateX(-50%)';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1100);
+}
+
+function showGenericModal(title,bodyOrBtns,btns){
+  document.getElementById('gen-modal-title').textContent=title;
+  if(btns===undefined){
+    // bodyOrBtns is body html, no buttons
+    document.getElementById('gen-modal-body').innerHTML=bodyOrBtns;
+    document.getElementById('gen-modal-btns').innerHTML='';
+  } else if(typeof bodyOrBtns==='string'){
+    document.getElementById('gen-modal-body').innerHTML=bodyOrBtns;
+    document.getElementById('gen-modal-btns').innerHTML=btns.map((b,i)=>`<button class="${b.cls}" id="gmb${i}">${b.label}</button>`).join('');
+    btns.forEach((b,i)=>document.getElementById('gmb'+i).onclick=b.fn);
+  } else {
+    // bodyOrBtns is actually buttons array (no body)
+    document.getElementById('gen-modal-body').innerHTML='';
+    document.getElementById('gen-modal-btns').innerHTML=bodyOrBtns.map((b,i)=>`<button class="${b.cls}" id="gmb${i}">${b.label}</button>`).join('');
+    bodyOrBtns.forEach((b,i)=>document.getElementById('gmb'+i).onclick=b.fn);
+  }
+  openModal('modal-generic');
+}
+
+const TUTORIAL_CONTENT={
+  basics:`<div class="tut-section"><h3>The Goal</h3>
+<div class="tut-row"><span class="tut-icon">🎯</span><span>Hit the <b>score target</b> before the opponent Slams Down. Melds generate Chips × Mult = Score. Miss the target and you lose the hand.</span></div>
+<div class="tut-row"><span class="tut-icon">🃏</span><span>Draw from the <b>Stock</b> or take from the <b>Discard Fan</b>. You can reach deep into the discard to grab a card — but you take every card above it too.</span></div>
+<div class="tut-row"><span class="tut-icon">✅</span><span>Select cards (click to highlight) and press <b>Set Pack</b> or <b>Set Trail</b> to commit a meld. Then select one deadwood card and press <b>Discard</b> or <b>Slam Down!</b></span></div>
+<div class="tut-row"><span class="tut-icon">🏆</span><span>Win enough hands to clear the Den. Lose all hands and the run ends from scratch.</span></div>
+</div>
+<div class="tut-section"><h3>Melds</h3>
+<div class="tut-row"><span class="tut-icon">📦</span><span><b>Pack</b> — 3+ cards of the same rank, any habitat. Generates base Chips + 1× Mult.</span></div>
+<div class="tut-row"><span class="tut-icon">🔗</span><span><b>Trail</b> — 3+ consecutive ranks in the <i>same</i> habitat (e.g. Fox 6 + Wolf 7 + Boar 8 in Forest). Generates base Chips + 2× Mult.</span></div>
+<div class="tut-row"><span class="tut-icon">🌀</span><span>True Wilds (Mud Pig, Boss Hog) can fill any rank in a Pack or bridge a single-rank gap in a Trail.</span></div>
+</div>
+<div class="tut-section"><h3>Habitats</h3>
+<div class="tut-row"><span class="tut-icon">🌲</span><span><b>Forest</b> — verdant green cards</span></div>
+<div class="tut-row"><span class="tut-icon">🌾</span><span><b>Plains</b> — warm amber cards</span></div>
+<div class="tut-row"><span class="tut-icon">❄️</span><span><b>Tundra</b> — cool blue cards</span></div>
+<div class="tut-row"><span class="tut-icon">💧</span><span><b>Swamp</b> — teal cards</span></div>
+</div>`,
+
+  scoring:`<div class="tut-section"><h3>Chips × Mult = Score</h3>
+<div class="tut-row"><span class="tut-icon">💎</span><span><b>Chips</b> = sum of card face values in your melds (a Wolf 7 contributes 7 chips). Deadwood cards are subtracted as a penalty.</span></div>
+<div class="tut-row"><span class="tut-icon">✖️</span><span><b>Mult</b> starts at your permanent mult (1.0 baseline), then adds from meld types, Wild Pig triggers, and Charm bonuses.</span></div>
+<div class="tut-row"><span class="tut-icon">💫</span><span><b>Clean Slam</b> (zero deadwood) gives ×2 mult — a huge bonus!</span></div>
+<div class="tut-row"><span class="tut-icon">⏱️</span><span>The <b>score ticker</b> shows your live Chips × Mult as you set melds. Aim to hit the green target bar before discarding.</span></div>
+</div>
+<div class="tut-section"><h3>Boss Rules</h3>
+<div class="tut-row"><span class="tut-icon">👁️</span><span>Dens 3–8 have a Boss Rule that changes scoring. Read it in the Den header — some multiply Wolf chips, some curse Trails, some add a time limit.</span></div>
+</div>`,
+
+  pigs:`<div class="tut-section"><h3>Wild Pig Cards (Jokers)</h3>
+<div class="tut-row"><span class="tut-icon">🐖</span><span>Wild Pigs are drafted after clearing each Den. They fire scoring triggers automatically when you Slam Down.</span></div>
+</div>
+<div class="tut-card-grid">${Object.values(WILD_PIGS).map(p=>`<div class="tut-card"><div class="tut-card-name">${p.emoji} ${p.name} <span class="tut-rarity-${p.rarity}">${p.rarity.toUpperCase()}</span></div><div class="tut-card-desc">${p.desc}</div></div>`).join('')}</div>`,
+
+  charms:`<div class="tut-section"><h3>Planet Charms (Permanent Upgrades)</h3>
+<div class="tut-card-grid">${Object.values(CHARMS).filter(c=>c.kind==='planet').map(ch=>`<div class="tut-card"><div class="tut-card-name">${ch.emoji} ${ch.name} <span class="tut-rarity-${ch.rarity}">${ch.rarity.toUpperCase()}</span> <span style="color:var(--text-faint);font-size:.62rem">🌰${ch.price}</span></div><div class="tut-card-desc">${ch.desc}</div></div>`).join('')}</div>
+<div class="tut-section" style="margin-top:12px"><h3>Tarot Charms (Active Abilities)</h3>
+<div class="tut-card-grid">${Object.values(CHARMS).filter(c=>c.kind==='tarot').map(ch=>`<div class="tut-card"><div class="tut-card-name">${ch.emoji} ${ch.name} <span class="tut-rarity-${ch.rarity}">${ch.rarity.toUpperCase()}</span> <span style="color:var(--text-faint);font-size:.62rem">🌰${ch.price}</span></div><div class="tut-card-desc">${ch.desc}</div></div>`).join('')}</div>`
+};
+
+let _tutTab='basics';
+function showTutorial(tab){
+  _tutTab=tab||'basics';
+  tutTab(_tutTab);
+  openModal('modal-tutorial');
+}
+function tutTab(tab){
+  _tutTab=tab;
+  document.querySelectorAll('.tut-tab').forEach(b=>{
+    b.classList.toggle('active',b.textContent.toLowerCase()===tab||b.getAttribute('onclick').includes("'"+tab+"'"));
+  });
+  const el=document.getElementById('tutorial-content');
+  if(el) el.innerHTML=TUTORIAL_CONTENT[tab]||'';
+}
+
+function showCharmsSummary(){
+  const body=G.charms.length===0?
+    '<p style="color:var(--text-faint);font-style:italic">You haven\'t found any Charms yet. Visit a shop after clearing a Den!</p>':
+    G.charms.map(cid=>{const c=CHARMS[cid];return `<div style="margin-bottom:10px"><div style="font-weight:800;font-size:.9rem;margin-bottom:2px">${c.emoji} ${c.name} <span class="pick-rarity ${c.rarity}" style="font-size:.65rem">${c.rarity.toUpperCase()}</span></div><div style="font-size:.78rem;color:var(--text-dim)">${c.desc}</div></div>`;}).join('<hr class="sep">');
+  document.getElementById('charms-modal-body').innerHTML=body;
+  openModal('modal-charms');
+}
+
+// stoneSkinActive is handled inside selectCard above
+</script>
+</body>
+</html>
